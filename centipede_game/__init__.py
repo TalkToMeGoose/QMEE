@@ -151,8 +151,8 @@ class Player(BasePlayer):
 
 
 class FirstPage(Page):
-    def is_displayed(self):
-        return self.round_number == 1
+    def is_displayed(player):
+        return player.round_number == 1
 
 
 class Welcome(FirstPage):
@@ -169,8 +169,8 @@ class Welcome(FirstPage):
 
 class WaitPage1(WaitPage):
 
-    def is_displayed(self):
-        return self.round_number == 1
+    def is_displayed(player):
+        return player.round_number == 1
 
     wait_for_all_groups = True
 
@@ -180,24 +180,25 @@ class Decision(Page):
     form_model = 'player'
     form_fields = ['take']
 
-    def is_displayed(self):
-        if self.player.id_in_group == 1 and self.round_number % 2 != 0 and self.group.round_on:
+    def is_displayed(player):
+        group = player.group
+        if player.id_in_group == 1 and player.round_number % 2 != 0 and group.round_on:
             return True
-        elif self.player.id_in_group == 2 and self.round_number % 2 == 0 and self.group.round_on:
+        elif player.id_in_group == 2 and player.round_number % 2 == 0 and group.round_on:
             return True
         else:
             return False
 
-    def vars_for_template(self):
+    def vars_for_template(player):
         return dict(
-            round=self.subsession.round,
-            turn=self.subsession.turn,
-            LARGE_PILE=C.LARGE_PILES[self.subsession.turn - 1],
-            SMALL_PILE=C.SMALL_PILES[self.subsession.turn - 1]
+            round=player.subsession.round,
+            turn=player.subsession.turn,
+            LARGE_PILE=C.LARGE_PILES[player.subsession.turn - 1],
+            SMALL_PILE=C.SMALL_PILES[player.subsession.turn - 1]
         )
 
-    def before_next_page(self):
-        return self.group.stop_round(), self.group.set_payoffs()
+    def before_next_page(group):
+        return group.stop_round(), group.set_payoffs()
 
 
 class WaitPage2(WaitPage):
@@ -207,27 +208,27 @@ class WaitPage2(WaitPage):
 
 class Results(Page):
     @staticmethod
-    def is_displayed(self):
-        if self.round_number in C.LAST_TURNS:
+    def is_displayed(player):
+        if player.round_number in C.LAST_TURNS:
             return True
         else:
             return False
 
     @staticmethod
-    def vars_for_template(self):
+    def vars_for_template(group):
         return dict(
-            round=self.subsession.round,
-            last_turn_in_round=self.group.last_turn_in_round,
-            large_pile=C.LARGE_PILES[self.group.last_turn_in_round - 1],
-            small_pile=C.SMALL_PILES[self.group.last_turn_in_round - 1],
+            round=group.subsession.round,
+            last_turn_in_round=group.last_turn_in_round,
+            large_pile=C.LARGE_PILES[group.last_turn_in_round - 1],
+            small_pile=C.SMALL_PILES[group.last_turn_in_round - 1],
             large_pile_pass=C.LARGE_PILES[-1],
             small_pile_pass=C.SMALL_PILES[-1]
         )
 
 
 class WaitPage3(WaitPage):
-    def is_displayed(self):
-        if self.round_number in C.LAST_TURNS:
+    def is_displayed(player):
+        if player.round_number in C.LAST_TURNS:
             return True
         else:
             return False
