@@ -1,6 +1,7 @@
 from otree.api import *
-import itertools # for randomizing participants into balanced groups
+import itertools  # for randomizing participants into balanced groups
 import numpy as np
+c = Currency
 
 author = 'Adam Hardaker, Universitaet Kassel EBGo' \
     'Rachel Hayward, Universitaet Kassel EBGo'
@@ -15,10 +16,10 @@ class C(BaseConstants):
     NAME_IN_URL = 'centipede_game'
     PLAYERS_PER_GROUP = 2
 
-    NUM_TURNS_PER_ROUND = 6 # number of decision points (i.e. turns) per round.
+    NUM_TURNS_PER_ROUND = 6  # number of decision points (i.e. turns) per round.
     # NOTE: each player thus takes (NUM_NODES_PER_GAME/2) turns
-    NUM_ROUNDS = 1 # starting with 1 for now to be simple
-    NUM_TURNS_TOTAL = NUM_TURNS_PER_ROUND * NUM_ROUNDS # number of turns across all rounds
+    NUM_ROUNDS = 1  # starting with 1 for now to be simple
+    NUM_TURNS_TOTAL = NUM_TURNS_PER_ROUND * NUM_ROUNDS  # number of turns across all rounds
 
     # define starting and ending turns of each round
     FIRST_TURNS = np.arange(1, NUM_TURNS_TOTAL, NUM_TURNS_PER_ROUND)
@@ -39,7 +40,7 @@ class C(BaseConstants):
         SMALL_PILES.append(SMALL_PILE * MULTIPLIER ** turn)
 
 
-class Subsession(BaseSubsession): # for initialization and group separation
+class Subsession(BaseSubsession):  # for initialization and group separation
 
     # set initial round and turn numbers
     round = models.IntegerField(initial=1)
@@ -53,9 +54,9 @@ def creating_session(subsession):
     # from turn 1 to total number of turns
     for x in range(1, C.NUM_TURNS_TOTAL+1):
         # groups turns into rounds based on number of turns per round
-        subsession.in_round(x).round = np.ceil(x/C.NUM_TURNS_PER_ROUND) #do i need to make sure this is an integer?
+        subsession.in_round(x).round = np.ceil(x/C.NUM_TURNS_PER_ROUND)  # do i need to make sure this is an integer?
         # determine position of total turn count within respective round
-        subsession.in_round(x).turn = x - (np.ceil(x/C.NUM_TURNS_PER_ROUND)-1)*C.NUM_TURNS_PER_ROUND #this too?
+        subsession.in_round(x).turn = x - (np.ceil(x/C.NUM_TURNS_PER_ROUND)-1)*C.NUM_TURNS_PER_ROUND  # this too?
 
     # # places people into treatment group for entire experiment
     # treatments = itertools.cycle([control, higher_fixed, higher_random])
@@ -75,13 +76,14 @@ def creating_session(subsession):
             subsession.group_like_round(x)
 
 # introduce logic to continue to next round
- def advance_round(subsession):
+    def advance_round(subsession):    # should be referenced on html file as
+        # after_all_players_arrive = 'advance_round' on last wait page
         for g in subsession.get_groups():
             if g.subsession.round < C.NUM_ROUNDS:
                 g.in_round(g.round_number + 1).round_on = True
 
-class Group(BaseGroup):
 
+class Group(BaseGroup):
     round_on = models.BooleanField(initial=True)
     round_outcome = models.IntegerField(initial=0)
     last_turn_in_round = models.IntegerField(initial=1)
@@ -107,7 +109,7 @@ class Group(BaseGroup):
             group.round_outcome = group.in_round(group.round_number).round_outcome
             group.last_turn_in_round = group.in_round(group.round_number).last_turn_in_round
 
- def set_payoffs(group):
+    def set_payoffs(group):
         players = group.get_players()
         takes = [p.take for p in players]
         for p in group.get_players():
@@ -130,9 +132,10 @@ class Group(BaseGroup):
 
 # Game logic: decisions made by players and resulting changes in game state
 
+
 class Player(BasePlayer):
 
-    #unsure about these rn
+    # unsure about these rn
     take = models.BooleanField(
         label='',
         widget=widgets.RadioSelectHorizontal,
@@ -146,6 +149,12 @@ class Player(BasePlayer):
 
 # PAGES
 
+
+class FirstPage(Page):
+    def is_displayed(self):
+        return self.round_number == 1
+
+
 class Welcome(FirstPage):
     pass
 
@@ -157,12 +166,14 @@ class Welcome(FirstPage):
 #         )
 # unsure how/if i will use this
 
+
 class WaitPage1(WaitPage):
 
     def is_displayed(self):
         return self.round_number == 1
 
     wait_for_all_groups = True
+
 
 class Decision(Page):
 
@@ -179,14 +190,15 @@ class Decision(Page):
 
     def vars_for_template(self):
         return dict(
-            round = self.subsession.round,
-            turn = self.subsession.turn,
-            LARGE_PILE = C.LARGE_PILES[self.subsession.turn - 1],
-            SMALL_PILE = C.SMALL_PILES[self.subsession.turn - 1]
+            round=self.subsession.round,
+            turn=self.subsession.turn,
+            LARGE_PILE=C.LARGE_PILES[self.subsession.turn - 1],
+            SMALL_PILE=C.SMALL_PILES[self.subsession.turn - 1]
         )
 
     def before_next_page(self):
         return self.group.stop_round(), self.group.set_payoffs()
+
 
 class WaitPage2(WaitPage):
     def after_all_players_arrive(self):
@@ -212,6 +224,7 @@ class Results(Page):
             small_pile_pass=C.SMALL_PILES[-1]
         )
 
+
 class WaitPage3(WaitPage):
     def is_displayed(self):
         if self.round_number in C.LAST_TURNS:
@@ -221,9 +234,10 @@ class WaitPage3(WaitPage):
     wait_for_all_groups = True
     after_all_players_arrive = 'advance_round'
 
+
 page_sequence = [
     Welcome,
-    Instructions,
+    # Instructions,
     WaitPage1,
     Decision,
     WaitPage2,
