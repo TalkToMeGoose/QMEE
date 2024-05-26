@@ -206,7 +206,7 @@ class Results(Page):
         return dict(
             round=self.subsession.round,
             last_turn_in_round=self.group.last_turn_in_round,
-            LARGE_PILE=C.LARGE_PILES[self.group.last_turn_in_round - 1],
+            large_pile=C.LARGE_PILES[self.group.last_turn_in_round - 1],
             small_pile=C.SMALL_PILES[self.group.last_turn_in_round - 1],
             large_pile_pass=C.LARGE_PILES[-1],
             small_pile_pass=C.SMALL_PILES[-1]
