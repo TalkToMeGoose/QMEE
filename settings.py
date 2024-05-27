@@ -6,6 +6,7 @@ SESSION_CONFIGS = [
          display_name='Centipede',
          app_sequence=['centipede_game'],
          num_demo_participants=4,
+         use_browser_bots=True,
      ),
 ]
 
@@ -33,6 +34,12 @@ ADMIN_USERNAME = 'admin'
 # for security, best to set admin password in an environment variable
 ADMIN_PASSWORD = environ.get('OTREE_ADMIN_PASSWORD')
 
-DEMO_PAGE_INTRO_HTML = """ """
+DEMO_PAGE_INTRO_HTML = """
+This is a two-player six-foot centipede game with various representations. 
+Since the free-of-charge Heroku server is not stable, please refresh the page if an error occurs.
+"""
+
 
 SECRET_KEY = '3984403655334'
+
+INSTALLED_APPS = ['otree']
