@@ -2,7 +2,7 @@
 {% load otree static %}
 
 {% block title %}
-    Round {{ round }} &ndash; Turn {{ turn }}
+    Round {{ subsession.round_number }} &ndash; Node {{ node }}
 {% endblock %}
 
 {% block content %}
@@ -18,7 +18,7 @@
 </div>
 
 <!-- Opponent's decision -->
-{% if turn > 1 %}
+{% if node > 1 %}
 <div class="card my-5">
     <div class="card-header">Your opponent decided to pass</div>
 </div>

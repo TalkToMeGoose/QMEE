@@ -25,7 +25,7 @@
 
 <!-- Results if a player takes -->
 {% elif  group.round_outcome > 0  and group.round_outcome == player.id_in_group %}
-    <div class="card my-5"><div class="card-header">You decided to take the large pile at node {{last_turn_in_round}}</div></div>
+    <div class="card my-5"><div class="card-header">You decided to take the large pile at node {{last_node}}</div></div>
     <div class="card my-3">
     <div class="card-body">
 <!--        <p>You decided to take the large pile.</p>-->
@@ -34,7 +34,7 @@
     </div>
     </div>
 {% else %}
-    <div class="card my-5"><div class="card-header">Your opponent decided to take the large pile at node {{last_turn_in_round}}</div></div>
+    <div class="card my-5"><div class="card-header">Your opponent decided to take the large pile at node {{last_node}}</div></div>
     <div class="card my-3">
     <div class="card-body">
 <!--        <p>Your opponent decided to take the large pile.</p>-->
