@@ -17,7 +17,7 @@ class C(BaseConstants):
 
     NUM_NODES = 6  # number of decision points ("nodes" or turns) per round. Essentially, how long the centipede is.
     # NOTE: each player thus takes (NUM_NODES/2) turns rach round
-    NUM_ROUNDS = 1  # starting with 1 for now to be simple
+    NUM_ROUNDS = 2  # starting with 1 for now to be simple
 
     # create payoffs for turn 1 in all games, as well as multiplier
     LARGE_PILE = 4
@@ -75,28 +75,19 @@ class Group(BaseGroup):
     @staticmethod
     def stop_round(group: 'Group'):
         players = group.get_players()
-        # takes = [p.take for p in players if p.take is not None]
-        #
-        # if any(takes):
-        #     group.round_active = False
-        #     group.last_node = group.node
-        #     group.round_outcome = 1 if takes[0] else 2
-        # elif group.node > C.NUM_NODES:
-        #     group.round_active = False
-        #     group.last_node = group.node
+        takes = [p.take for p in players if p.take is not None]
 
-        # if len(takes) > 0 and takes[0]:
-        #     group.round_active = False
-        #     group.round_outcome = 1
-        #     group.last_node = group.node
-        # elif len(takes) > 1 and takes[1]:
-        #     group.round_active = False
-        #     group.round_outcome = 2
-        #     group.last_node = group.node
-        # elif group.node == C.NUM_NODES and not any(takes):
-        #     group.round_active = False
-        #     group.last_node = group.node
-        pass
+        if len(takes) > 0 and takes[0]:
+            group.round_active = False
+            group.round_outcome = 1
+            group.last_node = group.node
+        elif len(takes) > 1 and takes[1]:
+            group.round_active = False
+            group.round_outcome = 2
+            group.last_node = group.node
+        elif group.node == C.NUM_NODES and not any(takes):
+            group.round_active = False
+            group.last_node = group.node
 
     @staticmethod
     def set_payoffs(group: 'Group'):
@@ -123,10 +114,10 @@ class Group(BaseGroup):
         print(f"Node advanced to: {group.node}. The round is {group.round_number}")
         print(f"Payoffs are now: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
 
-    # @staticmethod
-    # def advance_round(group):
-    #     if group.round_number < C.NUM_ROUNDS:
-    #         group.round_active = True
+    @staticmethod
+    def advance_round(group):
+        if group.round_number < C.NUM_ROUNDS:
+            group.round_active = True
 
 class Player(BasePlayer):
     take = models.BooleanField(
@@ -235,6 +226,16 @@ class ResultsCombined(Page):
 page_sequence = [
     Welcome,
     WaitPage1,
+    Decision,
+    WaitForDecision,
+    Decision,
+    WaitForDecision,
+    Decision,
+    WaitForDecision,
+    Decision,
+    WaitForDecision,
+    Decision,
+    WaitForDecision,
     Decision,
     WaitForDecision,
     Results,
