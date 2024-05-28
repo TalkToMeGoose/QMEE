@@ -109,7 +109,7 @@ class Group(BaseGroup):
     def advance_node(group : 'Group'):
         group.node += 1 #advance to next node
         players = group.get_players()
-        print(f"Node advanced to: {group.node}. The round is {group.round_number}")
+        print(f"Node advanced to:{group.node} of {C.NUM_NODES}. The round is {group.round_number} of {C.NUM_ROUNDS}")
         print(f"Payoffs are now: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
 
     @staticmethod
