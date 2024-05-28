@@ -3,8 +3,8 @@
 - ~~Results not showing after decision~~ [FIXED]
 - ~~Rounds not being counted right~~ [FIXED]
 - - ~~take out last/first rounds~~ [DONE]
-- cumulative payouts showing 0 in some instances
-- Red (first mover) always assigned to same player over rounds
+- cumulative payouts showing 0 in some instances???
+- ~~Red (first mover) always assigned to same player over rounds~~ [DONE]
 - everything else
 
 TO DO:
