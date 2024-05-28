@@ -1,6 +1,5 @@
 from otree.api import *
 import itertools  # for randomizing participants into balanced groups
-import numpy as np
 import random
 
 from otree.models import subsession
@@ -20,7 +19,7 @@ class C(BaseConstants):
 
     NUM_NODES = 6  # number of decision points ("nodes" or turns) per round. Essentially, how long the centipede is.
     # NOTE: each player thus takes (NUM_NODES/2) turns rach round
-    NUM_ROUNDS = 2  # starting with 1 for now to be simple
+    NUM_ROUNDS = 4  # starting with 1 for now to be simple
 
     # create payoffs for turn 1 in all games, as well as multiplier
     LARGE_PILE = 4
@@ -36,24 +35,29 @@ class C(BaseConstants):
         LARGE_PILES.append(LARGE_PILE * MULTIPLIER ** node)
         SMALL_PILES.append(SMALL_PILE * MULTIPLIER ** node)
 
-class Subsession(BaseSubsession):  # for initialization and group separation
+
+class Subsession(BaseSubsession):
     pass
+
+
 def creating_session(subsession):
-    treatment = itertools.cycle(['control', 'higher_fixed', 'higher_random'])  # make a repeating list of teatments
+    treatment = itertools.cycle(
+        ['control', 'higher_fixed', 'higher_random'])  # make a repeating list of teatments for assignment
     if subsession.round_number == 1:  # if first round
         print(f"subsession round number is {subsession.round_number}")
         subsession.group_randomly()  # assign people to groups randomly
         for group in subsession.get_groups():  # within all groups
             group.treatment = next(treatment)  # assign a treatment in order of the iteration (ensures balance)
             print(f"Group {group.id_in_subsession}: {group.treatment}")
-    else: # if not first round, randomize player roles within their groups
+    else:  # if not first round, randomize player roles within their groups
         subsession.group_like_round(1)
         for group in subsession.get_groups():
-            previous_group = group.in_round(1) # get groups from first round
-            group.treatment = previous_group.treatment # retain treatment
-            print(f"treatment retained") # tell everybody about it
+            previous_group = group.in_round(1)  # get groups from first round
+            group.treatment = previous_group.treatment  # retain treatment
+            print(f"treatment retained")  # tell everybody about it
             print(f"subsession round number is {subsession.round_number}")
-            group.reshuffle_group() # res
+            group.reshuffle_group()  # res
+
 
 class Group(BaseGroup):
     treatment = models.StringField()
@@ -62,7 +66,7 @@ class Group(BaseGroup):
     round_outcome = models.IntegerField(initial=0)
     last_node = models.IntegerField(initial=1)
 
-    # stop round when someone takes or continuing after last node, otherwise round_active remains true
+    # stop round if takes or pass at last node, otherwise round remains active
     @staticmethod
     def stop_round(group: 'Group'):
         players = group.get_players()
@@ -127,6 +131,7 @@ class Player(BasePlayer):
         ],
     )
     cumulative_payoff = models.CurrencyField()
+
 
 class Welcome(Page):
     @staticmethod
@@ -198,6 +203,7 @@ class Results(Page):  # shows payoffs for this round
             cumulative_payoff=cumulative_payoff
         )
 
+
 class ResultsCombined(Page):
     title_text = 'Combined Results'
 
@@ -208,6 +214,7 @@ class ResultsCombined(Page):
     # def vars_for_template(player : Player):
     #     all_players = player.in_all_rounds()
     #     combined_payoff =
+    # maybe show their payoffs and relate it to everyone else who has finished
 
 
 page_sequence = [
