@@ -1,7 +1,9 @@
 from otree.api import *
 import itertools  # for randomizing participants into balanced groups
 import numpy as np
-from random import shuffle
+import random
+
+from otree.models import subsession
 
 author = 'Adam Hardaker, Universitaet Kassel EBGo' \
          'Rachel Hayward, Universitaet Kassel EBGo'
@@ -34,26 +36,27 @@ class C(BaseConstants):
         LARGE_PILES.append(LARGE_PILE * MULTIPLIER ** node)
         SMALL_PILES.append(SMALL_PILE * MULTIPLIER ** node)
 
-
-
 class Subsession(BaseSubsession):  # for initialization and group separation
-    def creating_session(subsession):
-        if subsession.round_number == 1:
-            subsession.group_randomly()
-        else:
-            subsession.group_like_round(1)
-
-    # # FOR LATER: places people into treatment group for entire experiment
-    # treatments = itertools.cycle([control, higher_fixed, higher_random])
-    # if subsession.round_number == 1:
-    #     for player in subsession.get_players():
-    #         participant = player.participant
-    #         participant.treatment = next(treatments)
-    # QUESTIONS: what is the participant <-> group relationship here?
-    # are participants assigned to treatments or groups of participants (which I am aiming for)
-
+    pass
+def creating_session(subsession):
+    treatment = itertools.cycle(['control', 'higher_fixed', 'higher_random'])  # make a repeating list of teatments
+    if subsession.round_number == 1:  # if first round
+        print(f"subsession round number is {subsession.round_number}")
+        subsession.group_randomly()  # assign people to groups randomly
+        for group in subsession.get_groups():  # within all groups
+            group.treatment = next(treatment)  # assign a treatment in order of the iteration (ensures balance)
+            print(f"Group {group.id_in_subsession}: {group.treatment}")
+    else: # if not first round, randomize player roles within their groups
+        subsession.group_like_round(1)
+        for group in subsession.get_groups():
+            previous_group = group.in_round(1) # get groups from first round
+            group.treatment = previous_group.treatment # retain treatment
+            print(f"treatment retained") # tell everybody about it
+            print(f"subsession round number is {subsession.round_number}")
+            group.reshuffle_group() # res
 
 class Group(BaseGroup):
+    treatment = models.StringField()
     node = models.IntegerField(initial=1)
     round_active = models.BooleanField(initial=True)
     round_outcome = models.IntegerField(initial=0)
@@ -66,12 +69,12 @@ class Group(BaseGroup):
         takes = [p.take for p in players if p.take is not None]
 
         if len(takes) > 0 and takes[0]:
-            print(f"Player 1 stops round {group.round_number}.")
+            print(f"Player 1 stops round {group.round_number}")
             group.round_active = False
             group.round_outcome = 1
             group.last_node = group.node
         elif len(takes) > 1 and takes[1]:
-            print(f"Player 2 stops round {group.round_number}.")
+            print(f"Player 2 stops round {group.round_number}")
             group.round_active = False
             group.round_outcome = 2
             group.last_node = group.node
@@ -95,23 +98,22 @@ class Group(BaseGroup):
                     p.payoff = C.LARGE_PILES[group.last_node - 1]  # player who took gets large pile
                 else:
                     p.payoff = C.SMALL_PILES[group.last_node - 1]  # other player gets small pile
+            p.cumulative_payoff = sum(p.payoff for p in p.in_all_rounds())
 
     @staticmethod
-    def advance_node(group : 'Group'):
-        group.node += 1 #advance to next node
+    def advance_node(group: 'Group'):
+        group.node += 1  # advance to next node
         players = group.get_players()
-        print(f"Group {group.id_in_subsession} advanced to node {group.node}/{C.NUM_NODES} in round {group.round_number}")
+        print(
+            f"Group {group.id_in_subsession} advanced to node {group.node}/{C.NUM_NODES} in round {group.round_number}")
         print(f"Payoffs increased to: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
 
-    def shuffle_group_positions(group : 'Group'):
+    def reshuffle_group(group: 'Group'):
         players = group.get_players()
-        shuffle(players)
-        for i, player in enumerate(players):
-            player.id_in_group = i + 1  # Update id_in_group to reflect new positions
-        print(f"Shuffled positions for group {group.id_in_subsession}: {[p.id_in_group for p in players]}")
-        # Print player IDs to verify correct shuffling
-        for player in players:
-            print(f"Player {player.participant.code} is now in position {player.id_in_group}")
+        random.shuffle(players)
+        group.set_players(players)
+        print(f"🔀Shuffled positions for group {group.id_in_subsession}")
+
 
 class Player(BasePlayer):
     take = models.BooleanField(
@@ -124,20 +126,20 @@ class Player(BasePlayer):
             [False, 'Pass'],
         ],
     )
-    cumulative_payoff = models.FloatField()
-
+    cumulative_payoff = models.CurrencyField()
 
 class Welcome(Page):
     @staticmethod
     def is_displayed(player: Player):
         return player.round_number == 1
 
+    def before_next_page(player: Player, timeout_happened):
+        wait_for_all_groups = True
+
+
 class WaitForRoundStart(WaitPage):
     title_text = "Waiting for round to start"
 
-    wait_for_all_groups = True
-
-    # how to shuffle player positions
 
 class Decision(Page):
     form_model = 'player'
@@ -155,7 +157,7 @@ class Decision(Page):
         group = player.group
         return dict(
             node=group.node,
-            large_pile=C.LARGE_PILES[group.node - 1], # -1 to match the payoff list index under constants
+            large_pile=C.LARGE_PILES[group.node - 1],  # -1 to match the payoff list index under constants
             small_pile=C.SMALL_PILES[group.node - 1]
         )
 
@@ -193,7 +195,7 @@ class Results(Page):  # shows payoffs for this round
             small_pile=C.SMALL_PILES[player.group.last_node - 1],
             large_pile_pass=C.LARGE_PILES[-1],
             small_pile_pass=C.SMALL_PILES[-1],
-            cumulative_payoff= cumulative_payoff
+            cumulative_payoff=cumulative_payoff
         )
 
 class ResultsCombined(Page):
@@ -224,6 +226,6 @@ page_sequence = [
     Decision,
     WaitForDecision,
     Results,
-    #WaitPage3,  # waits for everyone and advances to next round
+    # WaitPage3,  # waits for everyone and advances to next round
     # ResultsCombined
 ]

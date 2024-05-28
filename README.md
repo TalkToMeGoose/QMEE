@@ -9,6 +9,7 @@
 
 TO DO:
 - make treatments
+- make introduction page/waiting room
 - make cumulative payoff display in the data
 - HTML pages (Rachel)
 - make centipede visual (Rachel)
