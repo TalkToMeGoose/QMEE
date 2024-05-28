@@ -109,8 +109,6 @@ class Group(BaseGroup):
     def advance_node(group : 'Group'):
         group.node += 1 #advance to next node
         players = group.get_players()
-        for p in players:
-            p.take = None # reset take field for next decision
         print(f"Node advanced to: {group.node}. The round is {group.round_number}")
         print(f"Payoffs are now: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
 
