@@ -4,13 +4,14 @@
 - ~~Rounds not being counted right~~ [FIXED]
 - - ~~take out last/first rounds~~ [DONE]
 - cumulative payouts showing 0 in some instances
-- both groups had same number when played asynchronously
+- Red (first mover) always assigned to same player over rounds
 - everything else
 
 TO DO:
 - make treatments
-- HTML pages
-- make centipede visual
+- make cumulative payoff display in the data
+- HTML pages (Rachel)
+- make centipede visual (Rachel)
 
 Priorities:
 1. create simplest form of game

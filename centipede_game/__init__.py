@@ -1,6 +1,7 @@
 from otree.api import *
 import itertools  # for randomizing participants into balanced groups
 import numpy as np
+from random import shuffle
 
 author = 'Adam Hardaker, Universitaet Kassel EBGo' \
          'Rachel Hayward, Universitaet Kassel EBGo'
@@ -102,6 +103,15 @@ class Group(BaseGroup):
         print(f"Group {group.id_in_subsession} advanced to node {group.node}/{C.NUM_NODES} in round {group.round_number}")
         print(f"Payoffs increased to: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
 
+    def shuffle_group_positions(group : 'Group'):
+        players = group.get_players()
+        shuffle(players)
+        for i, player in enumerate(players):
+            player.id_in_group = i + 1  # Update id_in_group to reflect new positions
+        print(f"Shuffled positions for group {group.id_in_subsession}: {[p.id_in_group for p in players]}")
+        # Print player IDs to verify correct shuffling
+        for player in players:
+            print(f"Player {player.participant.code} is now in position {player.id_in_group}")
 
 class Player(BasePlayer):
     take = models.BooleanField(
@@ -114,6 +124,7 @@ class Player(BasePlayer):
             [False, 'Pass'],
         ],
     )
+    cumulative_payoff = models.FloatField()
 
 
 class Welcome(Page):
@@ -121,15 +132,12 @@ class Welcome(Page):
     def is_displayed(player: Player):
         return player.round_number == 1
 
-
-class WaitPage1(WaitPage):
-
-    @staticmethod
-    def is_displayed(player: Player):
-        return player.round_number == 1
+class WaitForRoundStart(WaitPage):
+    title_text = "Waiting for round to start"
 
     wait_for_all_groups = True
 
+    # how to shuffle player positions
 
 class Decision(Page):
     form_model = 'player'
@@ -154,7 +162,7 @@ class Decision(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         if player.take:  # If the player decides to take
-            print(f" Player {player.id_in_group} took at node {player.group.node}")
+            print(f"Player {player.id_in_group} took at node {player.group.node}")
             player.group.stop_round(player.group)
             player.group.set_payoffs(player.group)
         elif player.group.node == C.NUM_NODES:  # If the last node is reached
@@ -188,10 +196,6 @@ class Results(Page):  # shows payoffs for this round
             cumulative_payoff= cumulative_payoff
         )
 
-    @staticmethod
-    def after_all_players_arrive(group : Group):
-        print(f"Group {group.id_in_subsession}: Both players clicked start next round.")
-
 class ResultsCombined(Page):
     title_text = 'Combined Results'
 
@@ -206,7 +210,7 @@ class ResultsCombined(Page):
 
 page_sequence = [
     Welcome,
-    WaitPage1,
+    WaitForRoundStart,
     Decision,
     WaitForDecision,
     Decision,
