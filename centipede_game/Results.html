@@ -44,6 +44,8 @@
     </div>
 {% endif %}
 
+    <p> Your total payoff is {{ cumulative_payoff }} </p>
+
 <!-- Next button -->
 {% if player.round_number < C.NUM_ROUNDS %}
    <input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start next round"/>

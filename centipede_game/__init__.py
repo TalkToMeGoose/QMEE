@@ -33,27 +33,14 @@ class C(BaseConstants):
         LARGE_PILES.append(LARGE_PILE * MULTIPLIER ** node)
         SMALL_PILES.append(SMALL_PILE * MULTIPLIER ** node)
 
-def creating_session(subsession):
-    subsession.group_randomly()
+
 
 class Subsession(BaseSubsession):  # for initialization and group separation
-    pass
-    # def creating_session(subsession):
-    #     subsession.group_randomly()  # for now
-    # maybe not needed
-    # from turn 1 to total number of turns
-    # for x in range(1, C.NUM_TURNS_TOTAL + 1):
-    #     # groups turns into rounds based on number of turns per round
-    #     subsession.round_number = int(np.ceil(x / C.NUM_NODES))
-    #     # determine position of total turn count within respective round
-    #     subsession.turn = x - (int(np.ceil(x / C.NUM_NODES)) - 1) * C.NUM_NODES
-    #
-    # # groups randomly the first round and holds those groups throughout
-    # if subsession.round_number in C.FIRST_TURNS:
-    #     subsession.group_randomly()
-    # else:
-    #     x = C.FIRST_TURNS[int(np.ceil(subsession.round_number / C.NUM_NODES)) - 1]
-    #     subsession.group_like_round(x)
+    def creating_session(subsession):
+        if subsession.round_number == 1:
+            subsession.group_randomly()
+        else:
+            subsession.group_like_round(1)
 
     # # FOR LATER: places people into treatment group for entire experiment
     # treatments = itertools.cycle([control, higher_fixed, higher_random])
@@ -78,14 +65,17 @@ class Group(BaseGroup):
         takes = [p.take for p in players if p.take is not None]
 
         if len(takes) > 0 and takes[0]:
+            print(f"Player 1 stops round {group.round_number}.")
             group.round_active = False
             group.round_outcome = 1
             group.last_node = group.node
         elif len(takes) > 1 and takes[1]:
+            print(f"Player 2 stops round {group.round_number}.")
             group.round_active = False
             group.round_outcome = 2
             group.last_node = group.node
         elif group.node == C.NUM_NODES and not any(takes):
+            print(f"No one took in {group.round_number}. Round ended")
             group.round_active = False
             group.last_node = group.node
 
@@ -109,13 +99,9 @@ class Group(BaseGroup):
     def advance_node(group : 'Group'):
         group.node += 1 #advance to next node
         players = group.get_players()
-        print(f"Node advanced to:{group.node} of {C.NUM_NODES}. The round is {group.round_number} of {C.NUM_ROUNDS}")
-        print(f"Payoffs are now: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
+        print(f"Group {group.id_in_subsession} advanced to node {group.node}/{C.NUM_NODES} in round {group.round_number}")
+        print(f"Payoffs increased to: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
 
-    @staticmethod
-    def advance_round(group):
-        if group.round_number < C.NUM_ROUNDS:
-            group.round_active = True
 
 class Player(BasePlayer):
     take = models.BooleanField(
@@ -168,12 +154,14 @@ class Decision(Page):
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
         if player.take:  # If the player decides to take
+            print(f" Player {player.id_in_group} took at node {player.group.node}")
             player.group.stop_round(player.group)
             player.group.set_payoffs(player.group)
         elif player.group.node == C.NUM_NODES:  # If the last node is reached
             player.group.stop_round(player.group)
             player.group.set_payoffs(player.group)
         else:  # If the player decides to pass
+            print(f"Player {player.id_in_group} passes at node {player.group.node}")
             player.group.advance_node(player.group)
 
 
@@ -190,24 +178,19 @@ class Results(Page):  # shows payoffs for this round
 
     @staticmethod
     def vars_for_template(player: Player):
+        cumulative_payoff = sum(p.payoff for p in player.in_all_rounds())
         return dict(
             last_node=player.group.last_node,  # do i need player and group here?
             large_pile=C.LARGE_PILES[player.group.last_node - 1],
             small_pile=C.SMALL_PILES[player.group.last_node - 1],
             large_pile_pass=C.LARGE_PILES[-1],
-            small_pile_pass=C.SMALL_PILES[-1]
+            small_pile_pass=C.SMALL_PILES[-1],
+            cumulative_payoff= cumulative_payoff
         )
 
-    # @staticmethod
-    # def before_next_page(player: Player, timeout_happened):
-    #     player.group.advance_round(player.group)
-
-
-# class WaitPage3(WaitPage):
-#     @staticmethod
-#     def is_displayed(player: Player):
-#         return player.round_number < C.NUM_ROUNDS  # page shows when
-
+    @staticmethod
+    def after_all_players_arrive(group : Group):
+        print(f"Group {group.id_in_subsession}: Both players clicked start next round.")
 
 class ResultsCombined(Page):
     title_text = 'Combined Results'

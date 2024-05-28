@@ -3,6 +3,8 @@
 - ~~Results not showing after decision~~ [FIXED]
 - ~~Rounds not being counted right~~ [FIXED]
 - - ~~take out last/first rounds~~ [DONE]
+- cumulative payouts showing 0 in some instances
+- both groups had same number when played asynchronously
 - everything else
 
 TO DO:
