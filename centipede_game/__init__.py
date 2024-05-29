@@ -2,8 +2,6 @@ from otree.api import *
 import itertools  # for randomizing participants into balanced groups
 import random
 
-from otree.models import subsession
-
 author = 'Adam Hardaker, Universitaet Kassel EBGo' \
          'Rachel Hayward, Universitaet Kassel EBGo'
 
@@ -39,7 +37,10 @@ class C(BaseConstants):
 class Subsession(BaseSubsession):
     pass
 
-
+# creating our session, at round 1 we assign people to groups randomly, and we then assign
+# these groups to one of we iterate through the treatments via itertools to ensure balance
+# as groups go through all other rounds, groups and treatments are held constant while
+# the first-mover of each group is randomized
 def creating_session(subsession):
     treatment = itertools.cycle(
         ['control', 'higher_fixed', 'higher_random'])  # make a repeating list of teatments for assignment
@@ -52,19 +53,19 @@ def creating_session(subsession):
     else:  # if not first round, randomize player roles within their groups
         subsession.group_like_round(1)
         for group in subsession.get_groups():
-            previous_group = group.in_round(1)  # get groups from first round
-            group.treatment = previous_group.treatment  # retain treatment
-            print(f"treatment retained")  # tell everybody about it
+            previous_group = group.in_round(1)
+            group.treatment = previous_group.treatment
+            print(f"treatment retained")
             print(f"subsession round number is {subsession.round_number}")
-            group.reshuffle_group()  # res
+            group.reshuffle_group()  # reshuffles positions within the group, defined below
 
 
 class Group(BaseGroup):
     treatment = models.StringField()
     node = models.IntegerField(initial=1)
-    round_active = models.BooleanField(initial=True)
-    round_outcome = models.IntegerField(initial=0)
-    last_node = models.IntegerField(initial=1)
+    round_active = models.BooleanField(initial=True) # used to know when to stop the round
+    round_outcome = models.IntegerField(initial=0) # used to say who, if anyone, took on Results page
+    last_node = models.IntegerField(initial=1) # used to determine how far players got
 
     # stop round if takes or pass at last node, otherwise round remains active
     @staticmethod
@@ -112,7 +113,7 @@ class Group(BaseGroup):
             f"Group {group.id_in_subsession} advanced to node {group.node}/{C.NUM_NODES} in round {group.round_number}")
         print(f"Payoffs increased to: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
 
-    def reshuffle_group(group: 'Group'):
+    def reshuffle_group(group: 'Group'): # used to randomize positions within a group
         players = group.get_players()
         random.shuffle(players)
         group.set_players(players)
@@ -141,10 +142,8 @@ class Welcome(Page):
     def before_next_page(player: Player, timeout_happened):
         wait_for_all_groups = True
 
-
 class WaitForRoundStart(WaitPage):
     title_text = "Waiting for round to start"
-
 
 class Decision(Page):
     form_model = 'player'
