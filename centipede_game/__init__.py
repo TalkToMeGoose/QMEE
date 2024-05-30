@@ -33,22 +33,30 @@ class C(BaseConstants):
         LARGE_PILES.append(LARGE_PILE * MULTIPLIER ** node)
         SMALL_PILES.append(SMALL_PILE * MULTIPLIER ** node)
 
+    # Add payoffs for last round of 'higher_fixed' treatments (random calculated in set_payoffs)
+    LARGE_PILE_FIXED = 500
+    SMALL_PILE_FIXED = 120
+
 
 class Subsession(BaseSubsession):
     pass
 
-# creating our session, at round 1 we assign people to groups randomly, and we then assign
-# these groups to one of we iterate through the treatments via itertools to ensure balance
-# as groups go through all other rounds, groups and treatments are held constant while
+# creating our session, at round 1 we assign people to groups randomly. We then assign
+# these groups to one of the treatments using itertools to ensure balance.
+# As groups go through all other rounds, groups and treatments are held constant while
 # the first-mover of each group is randomized
 def creating_session(subsession):
-    treatment = itertools.cycle(
-        ['control', 'higher_fixed', 'higher_random'])  # make a repeating list of teatments for assignment
+    treatment = subsession.session.config.get('treatment', None)
+
     if subsession.round_number == 1:  # if first round
         print(f"subsession round number is {subsession.round_number}")
         subsession.group_randomly()  # assign people to groups randomly
         for group in subsession.get_groups():  # within all groups
-            group.treatment = next(treatment)  # assign a treatment in order of the iteration (ensures balance)
+            if treatment: # gets treatment from session confing if one exists
+                group.treatment = treatment
+            else: # else it cycles through treatments for the groups
+                treatment_cycle = itertools.cycle(['control', 'higher_fixed', 'higher_random'])
+                group.treatment = next(treatment_cycle)  # assign a treatment in order of the iteration (ensures balance)
             print(f"Group {group.id_in_subsession}: {group.treatment}")
     else:  # if not first round, randomize player roles within their groups
         subsession.group_like_round(1)
@@ -66,8 +74,10 @@ class Group(BaseGroup):
     round_active = models.BooleanField(initial=True) # used to know when to stop the round
     round_outcome = models.IntegerField(initial=0) # used to say who, if anyone, took on Results page
     last_node = models.IntegerField(initial=1) # used to determine how far players got
+    large_pile_end = models.CurrencyField()
+    small_pile_end = models.CurrencyField()
 
-    # stop round if takes or pass at last node, otherwise round remains active
+    # stop round whenever takes or passes at last node, otherwise round remains active
     @staticmethod
     def stop_round(group: 'Group'):
         players = group.get_players()
@@ -92,12 +102,24 @@ class Group(BaseGroup):
     def set_payoffs(group: 'Group'):
         players = group.get_players()  # gets list of players in the group
         takes = [p.take for p in players]  # checks if either player selected take
+
+        # set payoffs accodring to treatment
+        if group.treatment == 'higher_fixed':
+            group.large_pile_end = C.LARGE_PILE_FIXED
+            group.small_pile_end = C.SMALL_PILE_FIXED
+        elif group.treatment == 'higher_random':
+            group.large_pile_end = random.randint(0,1000)
+            group.small_pile_end = random.randint(0,240)
+        else:
+            group.large_pile_end = C.LARGE_PILES[-1]
+            group.small_pile_end = C.SMALL_PILES[-1]
+
         for p in players:
             if group.node == C.NUM_NODES and not any(takes):  # if no takes
                 if p.id_in_group == 1:
-                    p.payoff = C.LARGE_PILES[-1]  # player 1 gets the large pile
+                    p.payoff = group.large_pile_end  # player 1 gets the large pile
                 else:
-                    p.payoff = C.SMALL_PILES[-1]
+                    p.payoff = group.small_pile_end
             elif group.node < C.NUM_NODES and any(takes):  # if someone takes
                 if p.take:
                     p.payoff = C.LARGE_PILES[group.last_node - 1]  # player who took gets large pile
@@ -192,13 +214,15 @@ class Results(Page):  # shows payoffs for this round
 
     @staticmethod
     def vars_for_template(player: Player):
+        group = player.group
+        treatment = group.treatment
         cumulative_payoff = sum(p.payoff for p in player.in_all_rounds())
         return dict(
             last_node=player.group.last_node,  # do i need player and group here?
             large_pile=C.LARGE_PILES[player.group.last_node - 1],
             small_pile=C.SMALL_PILES[player.group.last_node - 1],
-            large_pile_pass=C.LARGE_PILES[-1],
-            small_pile_pass=C.SMALL_PILES[-1],
+            large_pile_pass=group.large_pile_end,
+            small_pile_pass=group.small_pile_end,
             cumulative_payoff=cumulative_payoff
         )
 
