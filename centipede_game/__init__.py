@@ -37,43 +37,80 @@ class C(BaseConstants):
     LARGE_PILE_FIXED = 500
     SMALL_PILE_FIXED = 120
 
+    # for within-subject experiments, define all permutations of the treatments
+    TREATMENTS = ['control', 'higher_fixed', 'higher_random']
+    TREATMENT_PERMUTATIONS = list(itertools.permutations(TREATMENTS))
+
 
 class Subsession(BaseSubsession):
     pass
+
 
 # creating our session, at round 1 we assign people to groups randomly. We then assign
 # these groups to one of the treatments using itertools to ensure balance.
 # As groups go through all other rounds, groups and treatments are held constant while
 # the first-mover of each group is randomized
 def creating_session(subsession):
-    treatment = subsession.session.config.get('treatment', None)
+    treatment_hardcoded = subsession.session.config.get('treatment', None)
 
     if subsession.round_number == 1:  # if first round
-        print(f"subsession round number is {subsession.round_number}")
+        print(f"----SUBSESSION CREATED----")
         subsession.group_randomly()  # assign people to groups randomly
         for group in subsession.get_groups():  # within all groups
-            if treatment: # gets treatment from session confing if one exists
-                group.treatment = treatment
-            else: # else it cycles through treatments for the groups
-                treatment_cycle = itertools.cycle(['control', 'higher_fixed', 'higher_random'])
-                group.treatment = next(treatment_cycle)  # assign a treatment in order of the iteration (ensures balance)
-            print(f"Group {group.id_in_subsession}: {group.treatment}")
-    else:  # if not first round, randomize player roles within their groups
+
+            if treatment_hardcoded:
+                group.treatment = treatment_hardcoded  # gets hardcoded treatment from session confing if one exists
+                print(f"Group {group.id_in_subsession} treatment is hardcoded as {treatment_hardcoded} for all rounds")
+
+            else:  # else it randomizes a treatment order
+                treatment_order = random.choice(C.TREATMENT_PERMUTATIONS)
+                group.treatment_order = ','.join(treatment_order)  # Store as a comma-separated string
+                group.starting_position = (group.id_in_subsession - 1) % len(treatment_order)  # Track starting position
+                print(f"Group {group.id_in_subsession} treatment order: {group.treatment_order}")
+
+
+    else:  # if not first round, advance to next treatment & randomize player roles within their groups
         subsession.group_like_round(1)
         for group in subsession.get_groups():
             previous_group = group.in_round(1)
-            group.treatment = previous_group.treatment
-            print(f"treatment retained")
-            print(f"subsession round number is {subsession.round_number}")
+
+            if treatment_hardcoded:  # exception: keeps treatment if defined in config
+                group.treatment = previous_group.treatment
+                group.treatment = treatment_hardcoded
+
+            else:  # ensuring continuity from previous rounds in order and start position
+                group.treatment_order = previous_group.treatment_order
+                group.starting_position = previous_group.starting_position
+
             group.reshuffle_group()  # reshuffles positions within the group, defined below
+
+    # assign treatments based on the group's treatment order
+    for group in subsession.get_groups():
+        if not treatment_hardcoded:  # checks for hardcoded exception
+            treatment_order = group.treatment_order.split(',')
+            round_index = (group.round_number - 1) % len(treatment_order) # uses modulo in case more rounds than treatments
+            group.treatment = treatment_order[round_index]
+
+    # set payoffs according to treatment
+        if group.treatment == 'higher_fixed':
+            group.large_pile_end = C.LARGE_PILE_FIXED
+            group.small_pile_end = C.SMALL_PILE_FIXED
+        elif group.treatment == 'higher_random':
+            group.large_pile_end = random.randint(0, 1000)
+            group.small_pile_end = random.randint(0, 240)
+        else:
+            group.large_pile_end = C.LARGE_PILES[-1]
+            group.small_pile_end = C.SMALL_PILES[-1]
 
 
 class Group(BaseGroup):
     treatment = models.StringField()
+    treatment_order = models.StringField()
+    starting_position = models.IntegerField()
     node = models.IntegerField(initial=1)
-    round_active = models.BooleanField(initial=True) # used to know when to stop the round
-    round_outcome = models.IntegerField(initial=0) # used to say who, if anyone, took on Results page
-    last_node = models.IntegerField(initial=1) # used to determine how far players got
+    round_active = models.BooleanField(initial=True)  # used to know when to stop the round
+    round_outcome = models.IntegerField(initial=0)  # used to say who, if anyone, took on Results page
+    last_node = models.IntegerField(initial=1)  # used to determine how far players got
     large_pile_end = models.CurrencyField()
     small_pile_end = models.CurrencyField()
 
@@ -103,24 +140,13 @@ class Group(BaseGroup):
         players = group.get_players()  # gets list of players in the group
         takes = [p.take for p in players]  # checks if either player selected take
 
-        # set payoffs accodring to treatment
-        if group.treatment == 'higher_fixed':
-            group.large_pile_end = C.LARGE_PILE_FIXED
-            group.small_pile_end = C.SMALL_PILE_FIXED
-        elif group.treatment == 'higher_random':
-            group.large_pile_end = random.randint(0,1000)
-            group.small_pile_end = random.randint(0,240)
-        else:
-            group.large_pile_end = C.LARGE_PILES[-1]
-            group.small_pile_end = C.SMALL_PILES[-1]
-
         for p in players:
             if group.node == C.NUM_NODES and not any(takes):  # if no takes
                 if p.id_in_group == 1:
                     p.payoff = group.large_pile_end  # player 1 gets the large pile
                 else:
                     p.payoff = group.small_pile_end
-            elif group.node < C.NUM_NODES and any(takes):  # if someone takes
+            elif any(takes):  # if someone takes
                 if p.take:
                     p.payoff = C.LARGE_PILES[group.last_node - 1]  # player who took gets large pile
                 else:
@@ -135,11 +161,10 @@ class Group(BaseGroup):
             f"Group {group.id_in_subsession} advanced to node {group.node}/{C.NUM_NODES} in round {group.round_number}")
         print(f"Payoffs increased to: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
 
-    def reshuffle_group(group: 'Group'): # used to randomize positions within a group
+    def reshuffle_group(group: 'Group'):  # used to randomize positions within a group
         players = group.get_players()
         random.shuffle(players)
         group.set_players(players)
-        print(f"🔀Shuffled positions for group {group.id_in_subsession}")
 
 
 class Player(BasePlayer):
@@ -164,8 +189,10 @@ class Welcome(Page):
     def before_next_page(player: Player, timeout_happened):
         wait_for_all_groups = True
 
+
 class WaitForRoundStart(WaitPage):
     title_text = "Waiting for round to start"
+
 
 class Decision(Page):
     form_model = 'player'
@@ -215,7 +242,7 @@ class Results(Page):  # shows payoffs for this round
     @staticmethod
     def vars_for_template(player: Player):
         group = player.group
-        treatment = group.treatment
+        # treatment = group.treatment
         cumulative_payoff = sum(p.payoff for p in player.in_all_rounds())
         return dict(
             last_node=player.group.last_node,  # do i need player and group here?
@@ -223,7 +250,8 @@ class Results(Page):  # shows payoffs for this round
             small_pile=C.SMALL_PILES[player.group.last_node - 1],
             large_pile_pass=group.large_pile_end,
             small_pile_pass=group.small_pile_end,
-            cumulative_payoff=cumulative_payoff
+            cumulative_payoff=cumulative_payoff,
+            treatment=group.treatment
         )
 
 
