@@ -68,14 +68,12 @@ def creating_session(subsession):
                 group.starting_position = (group.id_in_subsession - 1) % len(treatment_order)  # Track starting position
                 print(f"Group {group.id_in_subsession} treatment order: {group.treatment_order}")
 
-
     else:  # if not first round, advance to next treatment & randomize player roles within their groups
         subsession.group_like_round(1)
         for group in subsession.get_groups():
             previous_group = group.in_round(1)
 
             if treatment_hardcoded:  # exception: keeps treatment if defined in config
-                group.treatment = previous_group.treatment
                 group.treatment = treatment_hardcoded
 
             else:  # ensuring continuity from previous rounds in order and start position
@@ -141,25 +139,15 @@ class Group(BaseGroup):
         takes = [p.take for p in players]  # checks if either player selected take
 
         for p in players:
-            if group.node == C.NUM_NODES and not any(takes):  # if no takes
-                if p.id_in_group == 1:
-                    p.payoff = group.large_pile_end  # player 1 gets the large pile
-                else:
-                    p.payoff = group.small_pile_end
-            elif any(takes):  # if someone takes
-                if p.take:
-                    p.payoff = C.LARGE_PILES[group.last_node - 1]  # player who took gets large pile
-                else:
-                    p.payoff = C.SMALL_PILES[group.last_node - 1]  # other player gets small pile
+            if group.node == C.NUM_NODES and not any(takes):  # if no takes, P1(2) gets large(small)pile
+                p.payoff = group.large_pile_end if p.id_in_group == 1 else group.small_pile_end
+            elif any(takes):  # if takes, large/small pile depends on the node number
+                p.payoff = C.LARGE_PILES[group.last_node - 1] if p.take else C.SMALL_PILES[group.last_node - 1]
             p.cumulative_payoff = sum(p.payoff for p in p.in_all_rounds())
 
     @staticmethod
     def advance_node(group: 'Group'):
-        group.node += 1  # advance to next node
-        players = group.get_players()
-        print(
-            f"Group {group.id_in_subsession} advanced to node {group.node}/{C.NUM_NODES} in round {group.round_number}")
-        print(f"Payoffs increased to: {C.LARGE_PILES[group.node - 1]} & {C.SMALL_PILES[group.node - 1]}")
+        group.node += 1
 
     def reshuffle_group(group: 'Group'):  # used to randomize positions within a group
         players = group.get_players()
@@ -199,10 +187,11 @@ class Decision(Page):
     form_fields = ['take']
 
     @staticmethod
-    def is_displayed(player: Player):  # display page to the appropriate player using even/odd round numbers
+    def is_displayed(player: Player):
+        group = player.group # display page to the appropriate player using even/odd round numbers
         return (
-                (player.id_in_group == 1 and player.group.node % 2 != 0 and player.group.round_active) or
-                (player.id_in_group == 2 and player.group.node % 2 == 0 and player.group.round_active)
+                (player.id_in_group == 1 and player.group.node % 2 != 0 and group.round_active) or
+                (player.id_in_group == 2 and player.group.node % 2 == 0 and group.round_active)
         )
 
     @staticmethod
@@ -216,14 +205,14 @@ class Decision(Page):
 
     @staticmethod
     def before_next_page(player: Player, timeout_happened):
-        if player.take:  # If the player decides to take
+        if player.take:
             print(f"Player {player.id_in_group} took at node {player.group.node}")
             player.group.stop_round(player.group)
             player.group.set_payoffs(player.group)
-        elif player.group.node == C.NUM_NODES:  # If the last node is reached
+        elif player.group.node == C.NUM_NODES:
             player.group.stop_round(player.group)
             player.group.set_payoffs(player.group)
-        else:  # If the player decides to pass
+        else:
             print(f"Player {player.id_in_group} passes at node {player.group.node}")
             player.group.advance_node(player.group)
 
