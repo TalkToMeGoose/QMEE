@@ -18,6 +18,7 @@ class C(BaseConstants):
     NUM_NODES = 6  # number of decision points ("nodes" or turns) per round. Essentially, how long the centipede is.
     # NOTE: each player thus takes (NUM_NODES/2) turns rach round
     NUM_ROUNDS = 4  # starting with 1 for now to be simple
+    ROUND_INSTRUCT_NUM = NUM_ROUNDS / 3  # number of rounds per treatment. only used on instructions/welcome pages
 
     # create payoffs for turn 1 in all games, as well as multiplier
     LARGE_PILE = 4

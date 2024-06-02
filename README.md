@@ -20,7 +20,10 @@ RACHEL TO DO:
 ~~- add svg for final treatment payoffs~~ [Done]
 ~~- toggle view for treatmet groups~~[Done]
 ~~- clean up internal placements svg~~ [Done]
-- create treatment instructions 
+- create treatment instructions
+  - control
+  - fixed
+  - random
 - customise wait pages and results pages
 - try and make the take/pass buttons on centipede clickable (if time)
 - make centipede look like a centipede (if time)

@@ -258,13 +258,22 @@
             <line x1="505" y1="80" x2="505" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <text x="505" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">32</text>
             <text x="505" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">128</text>
-            <text x="610" y="65" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">idk</text>
-            <text x="610" y="80" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">idk</text>
         </g>
     </svg>
-       <!--
-        </g> -->
 </div>
+<style>
+    .top{
+    position: absolute;
+    z-index: 1;
+    }
+.middle{
+    position: absolute;
+    z-index: 0.5;
+    }
+.bottom{
+    z-index: 0;
+    }
+</style>
    <!-- <button class="otree-btn-next btn btn-primary" id="nextButton" disabled>Next</button>
     <script>
         const btnT = document.getElementById('btnTake');
@@ -286,19 +295,6 @@
         btnT.addEventListener('click', onClick);
     </script>
 -->
-    <style>
-      .top{
-      position: absolute;
-      z-index: 1;
-      }
-      .middle{
-      position: absolute;
-      z-index: 0.5;
-      }
-      .bottom{
-      z-index: 0;
-      }
-    </style>
 <p></p>
 
 <!-- Player's color info -->
