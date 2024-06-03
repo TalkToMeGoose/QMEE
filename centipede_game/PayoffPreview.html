@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-Please note the payoffs for this round below:
+Please note the following payoffs for this round:
 
 <!--Insert picture here-->
 <div>
@@ -63,9 +63,9 @@ Please note the payoffs for this round below:
 <!-- Player's color info -->
 <div class="card my-5">
     {% if player.id_in_group == 1 %}
-    <div class="card-header">You are the <font style="color:red;">RED</font> player</div>
+    <div class="card-header">You are the <font style="color:red;">RED</font> player and will move first</div>
     {% else %}
-    <div class="card-header">You are the <font style="color:blue;">BLUE</font> player</div>
+    <div class="card-header">You are the <font style="color:blue;">BLUE</font> player and will move second</div>
     {% endif %}
 </div>
     {# base centipede image
