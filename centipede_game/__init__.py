@@ -157,6 +157,7 @@ class Group(BaseGroup):
 
 
 class Player(BasePlayer):
+    qmee_id = models.StringField(label="Please enter your ID:") # an ID for the experimental econ course
     take = models.BooleanField(
         initial=False,
         label='',
@@ -169,6 +170,15 @@ class Player(BasePlayer):
     )
     cumulative_payoff = models.CurrencyField()
 
+class NameEntry(Page):
+    form_model = 'player'
+    form_fields = ['qmee_id']
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == 1
+
+    def before_next_page(player: Player, timeout_happened):
+        player.participant.label = player.id
 
 class Welcome(Page):
     @staticmethod
@@ -265,6 +275,7 @@ class ResultsCombined(Page):
 
 
 page_sequence = [
+    NameEntry,
     Welcome,
     WaitForRoundStart,
     PayoffPreview,

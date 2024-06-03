@@ -5,7 +5,7 @@ SESSION_CONFIGS = [
          name='centipede_game',
          display_name='Centipede Game',
          app_sequence=['centipede_game'],
-         num_demo_participants=4,
+         num_demo_participants=2,
      ),
     dict(
         name='centipede_game_control',
@@ -46,7 +46,7 @@ SESSION_CONFIG_DEFAULTS = dict(
     real_world_currency_per_point=1.00, participation_fee=0.00, doc=""
 )
 
-PARTICIPANT_FIELDS = []
+PARTICIPANT_FIELDS = ['generated_id']
 SESSION_FIELDS = []
 
 # ISO-639 code
