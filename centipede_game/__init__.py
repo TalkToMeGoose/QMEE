@@ -182,6 +182,13 @@ class Welcome(Page):
 class WaitForRoundStart(WaitPage):
     title_text = "Waiting for round to start"
 
+class PayoffPreview(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        return True
+
+class WaitForBothPlayers(WaitPage):
+    title_text = "Waiting for both players"
 
 class Decision(Page):
     form_model = 'player'
@@ -223,7 +230,6 @@ class WaitForDecision(WaitPage):
     def after_all_players_arrive(group: Group):
         pass
 
-
 class Results(Page):  # shows payoffs for this round
     @staticmethod
     def is_displayed(player: Player):
@@ -261,6 +267,8 @@ class ResultsCombined(Page):
 page_sequence = [
     Welcome,
     WaitForRoundStart,
+    PayoffPreview,
+    WaitForBothPlayers,
     Decision,
     WaitForDecision,
     Decision,
@@ -274,6 +282,5 @@ page_sequence = [
     Decision,
     WaitForDecision,
     Results,
-    # WaitPage3,  # waits for everyone and advances to next round
     # ResultsCombined
 ]

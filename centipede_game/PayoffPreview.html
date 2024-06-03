@@ -1,0 +1,79 @@
+{% extends "global/Page.html" %}
+{% load otree static %}
+
+{% block title %}
+    Round {{ group.round_number }} has begun!
+{% endblock %}
+
+{% block content %}
+Please note the payoffs for this round below:
+
+<!--Insert picture here-->
+<div>
+{# Scalable vector for payoffs #}
+    {{ if group.treatment == 'control' }}
+    <svg class="middle" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
+        <g>
+            <text x="610" y="65"
+                  dominant-baseline="middle" text-anchor="middle"
+                  font-size="20" font-weight="bold"
+                  fill="red"
+            >265</text>
+            <text x="610" y="85"
+                  dominant-baseline="middle" text-anchor="middle"
+                  font-size="20" font-weight="bold"
+                  fill="blue"
+            >64</text>
+        </g>
+    </svg>
+    {{ endif }}
+    {{ if group.treatment == 'higher_fixed' }}
+    <svg class="middle" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
+        <g>
+            <text x="610" y="65"
+                  dominant-baseline="middle" text-anchor="middle"
+                  font-size="20" font-weight="bold"
+                  fill="red"
+            >500</text>
+            <text x="610" y="85"
+                  dominant-baseline="middle" text-anchor="middle"
+                  font-size="20" font-weight="bold"
+                  fill="blue"
+            >120</text>
+        </g>
+    </svg>
+    {{ endif }}
+    {{ if group.treatment == 'higher_random' }}
+    <svg class="middle" id="svg" width="680" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
+        <g>
+            <text x="630" y="65"
+                  dominant-baseline="middle" text-anchor="middle"
+                  font-size="20" font-weight="bold"
+                  fill="red"
+            >0-1000</text>
+            <text x="630" y="85"
+                  dominant-baseline="middle" text-anchor="middle"
+                  font-size="20" font-weight="bold"
+                  fill="blue"
+            >0-240</text>
+        </g>
+    </svg>
+    {{ endif }}
+
+<!-- Player's color info -->
+<div class="card my-5">
+    {% if player.id_in_group == 1 %}
+    <div class="card-header">You are the <font style="color:red;">RED</font> player</div>
+    {% else %}
+    <div class="card-header">You are the <font style="color:blue;">BLUE</font> player</div>
+    {% endif %}
+</div>
+
+{% if group.treatment == 'higher_random' %}
+Note: if the end is reached without either player taking, players receive a random number between the range given,
+indicated by the color.
+{% endif %}
+
+{% next_button %}
+
+{% endblock %}
