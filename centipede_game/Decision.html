@@ -8,16 +8,11 @@
 {% endblock %}
 
 {% block content %}
-
-<p xmlns="http://www.w3.org/1999/html">
-</p>
+{{ include_sibling 'instructions.html' }}
+<p xmlns="http://www.w3.org/1999/html"></p>
 <h3> Make Your Move!</h3>
-
-
-<!-- Centipede
-
-<input type="hidden" name="take" id="take_here"/>-->
 <p></p>
+<!-- centipede svg -->
 <div>
 {# Scalable vector for payoffs #}
     {{ if group.treatment == 'control' }}
@@ -245,6 +240,7 @@
         </g>
     </svg>
 </div>
+<!-- centipede layers -->
 <style>
     .top{
     position: absolute;
@@ -258,29 +254,7 @@
     z-index: 0;
     }
 </style>
-   <!-- <button class="otree-btn-next btn btn-primary" id="nextButton" disabled>Next</button>
-    <script>
-        const btnT = document.getElementById('btnTake');
-        const btnP = document.getElementByID('btnPass');
-
-        function onClick(event) {
-            // btnP.style.fill = 'blue';
-            // btnT.style.fill = 'blue';
-            // event.target.style.fill = 'red';
-            // $("button.active").removeClass("active");
-            // $(this).addClass("active");
-            // event.target.style.fill = 'red';
-
-            document.getElementById('take_here').value = event.target.value;
-            document.getElementById('nextButton').removeAttribute("disabled");
-        }
-
-        btnP.addEventListener('click', onClick);
-        btnT.addEventListener('click', onClick);
-    </script>
--->
 <p></p>
-
 <!-- Player's color info -->
 <div class="card my-5">
     {% if player.id_in_group == 1 %}
