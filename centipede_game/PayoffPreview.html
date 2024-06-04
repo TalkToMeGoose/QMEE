@@ -8,58 +8,6 @@
 {% block content %}
 Please note the following payoffs for this round:
 
-<!--Insert picture here-->
-<div>
-{# Scalable vector for payoffs #}
-    {{ if group.treatment == 'control' }}
-    <svg class="middle" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
-        <g>
-            <text x="610" y="65"
-                  dominant-baseline="middle" text-anchor="middle"
-                  font-size="20" font-weight="bold"
-                  fill="red"
-            >265</text>
-            <text x="610" y="85"
-                  dominant-baseline="middle" text-anchor="middle"
-                  font-size="20" font-weight="bold"
-                  fill="blue"
-            >64</text>
-        </g>
-    </svg>
-    {{ endif }}
-    {{ if group.treatment == 'higher_fixed' }}
-    <svg class="middle" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
-        <g>
-            <text x="610" y="65"
-                  dominant-baseline="middle" text-anchor="middle"
-                  font-size="20" font-weight="bold"
-                  fill="red"
-            >500</text>
-            <text x="610" y="85"
-                  dominant-baseline="middle" text-anchor="middle"
-                  font-size="20" font-weight="bold"
-                  fill="blue"
-            >120</text>
-        </g>
-    </svg>
-    {{ endif }}
-    {{ if group.treatment == 'higher_random' }}
-    <svg class="middle" id="svg" width="680" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
-        <g>
-            <text x="630" y="65"
-                  dominant-baseline="middle" text-anchor="middle"
-                  font-size="20" font-weight="bold"
-                  fill="red"
-            >0-1000</text>
-            <text x="630" y="85"
-                  dominant-baseline="middle" text-anchor="middle"
-                  font-size="20" font-weight="bold"
-                  fill="blue"
-            >0-240</text>
-        </g>
-    </svg>
-    {{ endif }}
-
 <!-- Player's color info -->
 <div class="card my-5">
     {% if player.id_in_group == 1 %}
@@ -126,6 +74,22 @@ Please note the following payoffs for this round:
             <line x1="505" y1="80" x2="505" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <text x="505" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">32</text>
             <text x="505" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">128</text>
+            <text x="620" y="65" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">final &#128176;</text>
+            <text x="620" y="85" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">final &#128176;</text>
+        </g>
+        <g>
+            <rect x="135" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="white"></rect>
+            <text x="143" y="70"
+                style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
+                font-size="17" fill="black"
+                >Pass</text>
+        </g>
+        <g>
+            <rect x="90" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="white"></rect>
+            <text x="95" y="120"
+                style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
+                font-size="17" fill="black"
+            >Take</text>
         </g>
     </svg>
 
