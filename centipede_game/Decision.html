@@ -1,18 +1,27 @@
 {% extends "global/Page.html" %}
 {% load otree static %}
-
-{% block title %}
-    Group {{ group.id_in_subsession }} &ndash; Node {{ node }} &ndash;
-    Round {{ group.round_number }}, subsession round {{ subsession.round_number }}
-    Treatment {{ group.treatment }}
-{% endblock %}
-
+{{ block title }}
+<!-- Opponent's decision -->
+{% if node > 1 %}
+<div class="card-header">Your opponent decided to pass</div>
+<style>
+    .card-header{
+    font-size: 0.6em;
+    background-color: DarkSeaGreen;
+    }
+</style>
+{% endif %}
+{% if player.id_in_group == 1 %}
+    <h3>Make Your Move, <font style="color:red;">RED</font> player</h3>
+    {% else %}
+    <h3>Make Your Move, <font style="color:blue;">BLUE</font> player</h3>
+    {% endif %}
+Turn ({{ node }} / {{ C.NUM_NODES }}) of
+    Round ({{ group.round_number }} / {{ C.NUM_ROUNDS }})
+{{ endblock }}
 {% block content %}
-<p xmlns="http://www.w3.org/1999/html"></p>
-<h3> Make Your Move!</h3>
-{{ include '_templates/global/BaseInstructions.html' }}
-<p></p>
-<!-- centipede svg -->
+<!-- Centipede
+<input type="hidden" name="take" id="take_here"/>-->
 <div>
 {# Scalable vector for payoffs #}
     {{ if group.treatment == 'control' }}
@@ -240,7 +249,6 @@
         </g>
     </svg>
 </div>
-<!-- centipede layers -->
 <style>
     .top{
     position: absolute;
@@ -254,34 +262,7 @@
     z-index: 0;
     }
 </style>
-<p></p>
-<!-- Player's color info -->
-<div class="card my-5">
-    {% if player.id_in_group == 1 %}
-    <div class="card-header">You are the <font style="color:red;">RED</font> player</div>
-    {% else %}
-    <div class="card-header">You are the <font style="color:blue;">BLUE</font> player</div>
-    {% endif %}
-</div>
-
-<!-- Opponent's decision -->
-{% if node > 1 %}
-<div class="card my-5">
-    <div class="card-header">Your opponent decided to pass</div>
-</div>
-{% endif %}
-
-<div class="card my-3">
-    <div class="card-body">
-
-        <!-- Piles -->
-        <p class="card-text">The Large Pile is: {{ large_pile }}</p>
-        <p class="card-text">The Small Pile is: {{ small_pile }}</p>
-
-        <br>
-
-        <!-- Decision -->
-        <p>Do you want to take the Large Pile?</p>
+        <p>Do you want to Take or Pass?</p>
 
         <!--Buttons-->
         <div class="btn-div">
@@ -292,7 +273,5 @@
             <input id="pass" type="submit" name="take" value="False" style="display: none;" required>Pass
         </label>
         </div>
-  </div>
-</div>
-
+{{ include '_templates/global/BaseInstructions.html' }}
 {{ endblock }}
