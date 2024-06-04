@@ -178,7 +178,7 @@ class NameEntry(Page):
         return player.round_number == 1
 
     def before_next_page(player: Player, timeout_happened):
-        player.participant.label = player.id
+        player.participant.label = player.qmee_id
 
 class Welcome(Page):
     @staticmethod
