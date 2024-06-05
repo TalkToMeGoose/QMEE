@@ -2,14 +2,28 @@
 {% load otree static %}
 {{ block title }}
 <!-- Opponent's decision -->
-{% if node > 1 %}
-<div class="card-header">Your opponent decided to pass</div>
-<style>
-    .card-header{
+<head>
+    <style>
+    .top{
+    position: absolute;
+    z-index: 1;
+    }
+.middle{
+    position: absolute;
+    z-index: 0.5;
+    }
+.bottom{
+    z-index: 0;
+    }
+.card-header{
     font-size: 0.6em;
     background-color: DarkSeaGreen;
+    border: 2px solid WhiteSmoke;
     }
 </style>
+</head>
+{% if node > 1 %}
+<div class="card-header">Your opponent decided to pass</div>
 {% endif %}
 {% if player.id_in_group == 1 %}
     <h3>Make Your Move, <font style="color:red;">RED</font> player</h3>
@@ -249,20 +263,8 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
         </g>
     </svg>
 </div>
-<style>
-    .top{
-    position: absolute;
-    z-index: 1;
-    }
-.middle{
-    position: absolute;
-    z-index: 0.5;
-    }
-.bottom{
-    z-index: 0;
-    }
-</style>
-        <p>Do you want to Take or Pass?</p>
+<br>
+        <p style="font-weight: 1.6em;">Do you want to Take or Pass?</p>
 
         <!--Buttons-->
         <div class="btn-div">
@@ -272,6 +274,6 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
         <label id="pass-label" class="btn btn-outline-primary">
             <input id="pass" type="submit" name="take" value="False" style="display: none;" required>Pass
         </label>
-        </div>
+        </div><br>
 {{ include '_templates/global/BaseInstructions.html' }}
 {{ endblock }}

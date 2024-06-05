@@ -2,24 +2,31 @@
 {% load static %}
 {{ load otree static }}
 {% block title %}
-<h1>Welcome to</h1>
+<head>
+    <style>
+        .header{
+        text-align: center;
+        font-size: 2em;
+        }
+        .subHead{
+         display: block;
+    margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+        }
+        .subHead2{
+        text-align: center;
+        }
+    </style>
+</head>
 {% endblock %}
 
 {% block content %}
 <p xmlns="http://www.w3.org/1999/html">
-    <div id="otree-header" class="header">
-        <h1 id="title">GAME NAME HERE</h1>
-    </div>
-<p xmlns="http://www.w3.org/1999/html"></p>
-<div id="otree-body" class="container">
-    <p id="subHead">A game created by Cold Stone Creamery Gmbh</p>
-</div>
-    <span>How the game works:</span>
-        <style>
-            span {
-            font-size: 1.3em;
-            text-align: center;
-        </style>
+<img src="{{ static 'stonecoldcreamery.jpeg' }}" style="height:400px;width:400px;" class="subHead"/>
+<p class="subHead2">A game created by Stone Cold Creamery Gmbh</p>
+
+    <p class="header">How the game works:</p>
     <p></p>
     You will be randomly paired with another participant. Each of you will take turns playing {{ C.NUM_ROUNDS }} rounds of a game,
     either taking or passing. <strong>There are several variations of the game you will be playing in nonconsecutive orders.</strong>
@@ -55,8 +62,8 @@
             <circle cx="115" cy="65" r="14" stroke="black" stroke-width="2" fill="red" />
             <line x1="130" y1="65" x2="190" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <line x1="115" y1="80" x2="115" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="115" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">payoff red</text>
-            <text x="115" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">payoff blue</text>
+            <text x="115" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">&#128176; red</text>
+            <text x="115" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">&#128176; blue</text>
             <text x="115" y="35" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">1st turn</text>
         </g>
 <!-- 2nd node -->
@@ -64,8 +71,8 @@
             <circle cx="215" cy="65" r="15" stroke="black" stroke-width="2" fill="blue" />
             <line x1="230" y1="65" x2="280" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <line x1="215" y1="80" x2="215" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="215" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">$$</text>
-            <text x="215" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">$$</text>
+            <text x="215" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">&#128176; red</text>
+            <text x="215" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">&#128176; blue</text>
             <text x="215" y="35" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">2nd turn</text>
         </g>
         <g>
