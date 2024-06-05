@@ -1,0 +1,15 @@
+{% extends "global/Page.html" %}
+
+{% block title %}Survey{% endblock %}
+
+{% block content %}
+    <h1>Survey</h1>
+    <form method="post">
+        {% formfield player.altruism %}
+        {% formfield player.trust %}
+        {% formfield player.risk_tolerance %}
+        {% formfield player.greed %}
+        {% formfield player.desire_to_win %}
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}

@@ -3,7 +3,6 @@
 
 {% block title %}
     Results of Round {{ group.round_number }}
-    {{ group.treatment }}
 {% endblock %}
 
 {% block content %}
@@ -26,7 +25,7 @@
 
 <!-- Results if a player takes -->
 {% elif  group.round_outcome > 0  and group.round_outcome == player.id_in_group %}
-    <div class="card my-5"><div class="card-header">You decided to take the large pile at node {{last_node}}</div></div>
+    <div class="card my-5"><div class="card-header">You decided to take the payoffs at node {{last_node}}</div></div>
     <div class="card my-3">
     <div class="card-body">
 <!--        <p>You decided to take the large pile.</p>-->
@@ -35,7 +34,7 @@
     </div>
     </div>
 {% else %}
-    <div class="card my-5"><div class="card-header">Your opponent decided to take the large pile at node {{last_node}}</div></div>
+    <div class="card my-5"><div class="card-header">Your opponent decided to take the payoffs at node {{last_node}}</div></div>
     <div class="card my-3">
     <div class="card-body">
 <!--        <p>Your opponent decided to take the large pile.</p>-->
@@ -46,11 +45,12 @@
 {% endif %}
 
     <p> Your total payoff is {{ cumulative_payoff }} </p>
+<input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start next round"/>
 
 <!-- Next button -->
-{% if player.round_number < C.NUM_ROUNDS %}
-   <input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start next round"/>
-{% else %}
+<!--{% if player.round_number < C.NUM_ROUNDS %}-->
+<!--   <input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start next round"/>-->
+<!--{% else %}-->
 
 {% endif %}
 

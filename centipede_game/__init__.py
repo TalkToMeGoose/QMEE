@@ -42,10 +42,17 @@ class C(BaseConstants):
     TREATMENTS = ['control', 'higher_fixed', 'higher_random']
     TREATMENT_PERMUTATIONS = list(itertools.permutations(TREATMENTS))
 
+    # for follow on survey
+    LIKERT_SCALE = [
+        (1, 'Strongly Disagree'),
+        (2, 'Disagree'),
+        (3, 'Neutral'),
+        (4, 'Agree'),
+        (5, 'Strongly Agree'),
+    ]
 
 class Subsession(BaseSubsession):
     pass
-
 
 # creating our session, at round 1 we assign people to groups randomly. We then assign
 # these groups to one of the treatments using itertools to ensure balance.
@@ -168,7 +175,33 @@ class Player(BasePlayer):
             [False, 'Pass'],
         ],
     )
+    # for survey questions
     cumulative_payoff = models.CurrencyField()
+    altruism = models.IntegerField(
+        choices=C.LIKERT_SCALE,
+        widget=widgets.RadioSelectHorizontal,
+        label="I believe in helping others even at a cost to myself."
+    )
+    trust = models.IntegerField(
+        choices=C.LIKERT_SCALE,
+        widget=widgets.RadioSelectHorizontal,
+        label="I generally trust others."
+    )
+    risk_tolerance = models.IntegerField(
+        choices=C.LIKERT_SCALE,
+        widget=widgets.RadioSelectHorizontal,
+        label="I am willing to take risks."
+    )
+    greed = models.IntegerField(
+        choices=C.LIKERT_SCALE,
+        widget=widgets.RadioSelectHorizontal,
+        label="I often pursue my own advantage at the expense of others."
+    )
+    desire_to_win = models.IntegerField(
+        choices=C.LIKERT_SCALE,
+        widget=widgets.RadioSelectHorizontal,
+        label="I have a strong desire to win in competitive situations."
+    )
 
 class NameEntry(Page):
     form_model = 'player'
@@ -261,17 +294,26 @@ class Results(Page):  # shows payoffs for this round
         )
 
 
-class ResultsCombined(Page):
-    title_text = 'Combined Results'
-
-    @staticmethod
-    def is_displayed(player: Player):
-        return player.round_number == C.NUM_ROUNDS
+# class ResultsCombined(Page):
+#     title_text = 'Combined Results'
+#
+#     @staticmethod
+#     def is_displayed(player: Player):
+#         return player.round_number == C.NUM_ROUNDS
     # @staticmethod
     # def vars_for_template(player : Player):
     #     all_players = player.in_all_rounds()
     #     combined_payoff =
     # maybe show their payoffs and relate it to everyone else who has finished
+
+class Survey(Page):
+    form_model = 'player'
+    form_fields = ['altruism', 'trust', 'risk_tolerance', 'greed', 'desire_to_win']
+
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == C.NUM_ROUNDS
+
 
 
 page_sequence = [
@@ -293,5 +335,5 @@ page_sequence = [
     Decision,
     WaitForDecision,
     Results,
-    # ResultsCombined
+    Survey,
 ]
