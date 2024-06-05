@@ -44,14 +44,20 @@
     </div>
 {% endif %}
 
-    <p> Your total payoff is {{ cumulative_payoff }} </p>
-<input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start next round"/>
+{% if player.round_number < C.NUM_ROUNDS %}
+   <p> Your total payoff so far is {{ cumulative_payoff }} </p>
+{% else %}
+   <p> Your final payoff is {{ cumulative_payoff }} </p>
+
+    <p>Thank you for playing! Before you go, we would like to conduct a short survey.</p>
+{% endif %}
+
 
 <!-- Next button -->
-<!--{% if player.round_number < C.NUM_ROUNDS %}-->
-<!--   <input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start next round"/>-->
-<!--{% else %}-->
-
+{% if player.round_number < C.NUM_ROUNDS %}
+   <input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start next round"/>
+{% else %}
+    <input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Go to survey"/>
 {% endif %}
 
 {% endblock %}

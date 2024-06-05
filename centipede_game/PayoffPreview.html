@@ -2,18 +2,12 @@
 {% load otree static %}
 
 {% block title %}
-    Round {{ group.round_number }} has begun!
+    Round {{ group.round_number }}
 {% endblock %}
 
 {% block content %}
-Please note the following payoffs and player color for this round:
-<!-- Player's color info -->
-    {% if player.id_in_group == 1 %}
-    <div class="card-header">You are the <font style="color:red;">RED</font> player and will move first</div>
-    {% else %}
-    <div class="card-header">You are the <font style="color:blue;">BLUE</font> player and will move second.<br>
-        You will have to wait until the <font style="color:red;">RED</font> player makes their choice.</div>
-    {% endif %}
+<h6>This round has the following payoffs:</h6>
+
 <div>
 {# Scalable vector for payoffs #}
     {{ if group.treatment == 'control' }}
@@ -142,10 +136,17 @@ Please note the following payoffs and player color for this round:
 }
 </style><br>
 {% if group.treatment == 'higher_random' %}
-Note: if the end is reached without either player taking, players receive a random number between the range given,
-indicated by the color.
+<b>NOTE:</b> The final payout is a random number between the ranges given, indicated by the color.
 {% endif %}
 
-{% next_button %}
+<!-- Player's color info -->
+    {% if player.id_in_group == 1 %}
+    <div class="card-header">You are the <font style="color:red;"><b>RED</b></font> player and will move first</div>
+    {% else %}
+    <div class="card-header">You are the <font style="color:blue;"><b>BLUE</b></font> player and will move second.<br>
+        You will have to wait until the <font style="color:red;"><b>RED</b></font> player makes their choice.</div>
+    {% endif %}
+
+<input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start round"/>
 
 {% endblock %}

@@ -283,6 +283,7 @@ class Results(Page):  # shows payoffs for this round
         group = player.group
         # treatment = group.treatment
         cumulative_payoff = sum(p.payoff for p in player.in_all_rounds())
+        player.cumulative_payoff = cumulative_payoff
         return dict(
             last_node=player.group.last_node,  # do i need player and group here?
             large_pile=C.LARGE_PILES[player.group.last_node - 1],
@@ -314,6 +315,29 @@ class Survey(Page):
     def is_displayed(player: Player):
         return player.round_number == C.NUM_ROUNDS
 
+class EndPage(Page):
+    @staticmethod
+    def is_displayed(player: Player):
+        return player.round_number == C.NUM_ROUNDS
+
+    @staticmethod
+    def vars_for_template(player: Player):
+        participants_data = []
+        for p in player.subsession.get_players():
+            payoff = p.field_maybe_none('cumulative_payoff')
+            participants_data.append({
+                'label': p.participant.label,
+                'cumulative_payoff': payoff if payoff is not None else 'Still playing',
+            })
+
+            # Sort participants_data by cumulative_payoff, placing 'Still playing' at the end
+            participants_data_sorted = sorted(
+                participants_data,
+                key=lambda x: (x['cumulative_payoff'] == 'Still playing', x['cumulative_payoff']),
+                reverse=True
+            )
+        return {'participants_data': participants_data_sorted}
+
 
 
 page_sequence = [
@@ -336,4 +360,5 @@ page_sequence = [
     WaitForDecision,
     Results,
     Survey,
+    EndPage,
 ]
