@@ -5,17 +5,26 @@
 <head>
     <style>
         .header{
-        text-align: center;
+        text-align: left;
         font-size: 2em;
         }
         .subHead{
-         display: block;
-    margin-left: auto;
-  margin-right: auto;
-  width: 50%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        width: 50%;
         }
         .subHead2{
         text-align: center;
+        font-size:1.2em;
+        }
+        .container{
+        border:2px dotted Thistle;
+        background-color: Lavender;
+        margin-left: auto;
+        margin-right: auto;
+        text-align: center;
+        font-size:1.2em;
         }
     </style>
 </head>
@@ -27,30 +36,12 @@
 <p class="subHead2">A game created by Stone Cold Creamery Gmbh</p>
 
     <p class="header">How the game works:</p>
-    <p></p>
-    You will be randomly paired with another participant. Each of you will take turns playing {{ C.NUM_ROUNDS }} rounds of a game,
-    either taking or passing. <strong>There are several variations of the game you will be playing in nonconsecutive orders.</strong>
-    <p> You will be assigned either the <font color="red">Red</font> or <font color="blue">Blue</font> player each round. The red player chooses first each round.</p>
-    <p> If you take: the game ends and each player receives the listed payoffs for the turn.</p>
-    <p> If you pass: the decision is passed to the other player and the game continues. Each time the game is passed, the payoffs increase.</p>
-    <p> The <font color="red">Red Player</font> receives the payoffs listed in <font color="red">red</font> typeface, the <font color="blue">Blue Player</font> receives the ones in <font color="blue">Blue</font>.</p>
-    <p> Your total payoff will be the total of all rounds combined.</p>
+    You will be randomly paired with another participant and randomly assigned the <span style="color:red;">red player</span> (first mover) or the <span style="color:blue;">blue player</span> (second mover).<br>
+    You will play {{ C.NUM_ROUNDS }} rounds of a game, either taking a given set of payoffs or passing the decision to the other player.<br>
 
-    <p></p>
-    <p></p>
-    We will be monitoring while you play. If you have any questions or need help, ask an examiner.
-    <p>PS. Please keep eyes on your own devices to maintain experiment integrity.</p>
-
-    <p></p>
-
-        <p>2 turn example:</p>
-        <style>
-            html{
-            font-size: 1.2em;
-            }
-        </style>
+<p class="container">Example of a round:</p>
 <div>
-    <svg class="bottom" id="svg" width="300" height="205" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
+    <svg class="bottom" id="svg" width="650" height="205" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
         <defs>
             <marker id="arrowhead" markerWidth="5" markerHeight="5"
             refX="0" refY="2.5" orient="auto">
@@ -59,39 +50,88 @@
         </defs>
 <!-- 1st node -->
         <g>
-            <circle cx="115" cy="65" r="14" stroke="black" stroke-width="2" fill="red" />
-            <line x1="130" y1="65" x2="190" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <line x1="115" y1="80" x2="115" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="115" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">&#128176; red</text>
-            <text x="115" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">&#128176; blue</text>
-            <text x="115" y="35" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">1st turn</text>
+            <circle cx="15" cy="65" r="14" stroke="black" stroke-width="2" fill="red" />
+            <line x1="30" y1="65" x2="90" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <line x1="15" y1="80" x2="15" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <text x="25" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">&#128176;red</text>
+            <text x="25" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">&#128176;blue</text>
+            <text x="15" y="35" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">1st</text>
         </g>
 <!-- 2nd node -->
         <g>
-            <circle cx="215" cy="65" r="15" stroke="black" stroke-width="2" fill="blue" />
-            <line x1="230" y1="65" x2="280" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <line x1="215" y1="80" x2="215" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="215" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">&#128176; red</text>
-            <text x="215" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">&#128176; blue</text>
-            <text x="215" y="35" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">2nd turn</text>
+            <circle cx="115" cy="65" r="15" stroke="black" stroke-width="2" fill="blue" />
+            <line x1="130" y1="65" x2="180" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <line x1="115" y1="80" x2="115" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <text x="115" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">2</text>
+            <text x="115" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">8</text>
+            <text x="115" y="35" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">2nd</text>
+        </g>
+<!-- 3rd node -->
+        <g>
+            <circle cx="205" cy="65" r="14" stroke="black" stroke-width="2" fill="red" />
+            <line x1="220" y1="65" x2="280" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <line x1="205" y1="80" x2="205" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <text x="205" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">16</text>
+            <text x="205" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">4</text>
+        </g>
+<!-- 4th node -->
+        <g>
+            <circle cx="305" cy="65" r="15" stroke="black" stroke-width="2" fill="blue" />
+            <line x1="320" y1="65" x2="380" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <line x1="305" y1="80" x2="305" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <text x="305" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">8</text>
+            <text x="305" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">32</text>
+        </g>
+<!-- 5th node -->
+        <g>
+            <circle cx="405" cy="65" r="14" stroke="black" stroke-width="2" fill="red" />
+            <line x1="420" y1="65" x2="480" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <line x1="405" y1="80" x2="405" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <text x="405" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">64</text>
+            <text x="405" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">16</text>
+        </g>
+<!-- 6th node -->
+        <g>
+            <circle cx="505" cy="65" r="15" stroke="black" stroke-width="2" fill="blue" />
+            <line x1="520" y1="65" x2="580" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <line x1="505" y1="80" x2="505" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
+            <text x="505" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">32</text>
+            <text x="505" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">128</text>
+            <text x="620" y="65" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">final&#128176;</text>
+            <text x="620" y="85" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">final&#128176;</text>
         </g>
         <g>
-            <rect x="135" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="white"></rect>
-            <text x="143" y="70"
+            <rect x="35" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
+            <text x="43" y="70"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
                 >Pass</text>
         </g>
         <g>
-            <rect x="90" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="white"></rect>
-            <text x="95" y="120"
+            <rect x="0" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
+            <text x="8" y="120"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
             >Take</text>
         </g>
             </svg>
-</div>
-<p></p>
+</div><br>
+<div class="container">
+    The red player, at the 1st turn, must decide whether to <span style="color:DarkSlateGrey;">'take'</span> or <span style="color:DarkSlateGrey;">'pass'.</span><br>
+If the red player takes, the round ends and the payoffs <span style="color:red;">&#128176;red</span> are awarded for <span style="color:red;">red</span> and
+<span style="color:blue;">&#128176;blue</span> for <span style="color:blue;">blue.</span><br>
+    If the red player passes, it is the 2nd turn and blue's choice.<br>
+</div><br>
+
+Important things to note:<br>
+- The payoff colors correspond with the player colors.<br>
+- If both players pass on every turn, the final payoffs at the far right are awarded.<br>
+- The round ends and payoffs are awarded whenever a player takes or when players pass on all nodes.<br>
+- There are several variations of the game you will be playing in nonconsecutive orders.<br>
+- Before the start of each round, both players will see a preview of the round's payoffs.<br>
+- After completing all rounds, your total payoff across rounds will be shown. The top three scoring players will be rewarded by the experimenters.<br>
+<!-- is saying the top 3 will be rewarded going to incentivise people to act in a way contrary to their original preferences -->
+<p style="font-weight:10px;">If you have any questions or need help during the experiment, please ask an examiner. Please look only at your own device during this experiment.</p>
     {% next_button %}
 
 {{ endblock }}
