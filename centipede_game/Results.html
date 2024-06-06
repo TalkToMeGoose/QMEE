@@ -6,13 +6,27 @@
 {% endblock %}
 
 {% block content %}
-
+<head>
+    <style>
+        .card{
+        background-color: DarkSeaGreen;
+        border: 3px dotted MediumSeaGreen;
+        padding-left: 10px;
+        }
+        .card-2{
+        border: 3px dotted DarkSeaGreen;
+        border-radius: 5px;
+        padding-left: 10px;
+        }
+    </style>
+</head>
 <!-- Results if no player takes -->
 {% if group.round_outcome == 0 %}
-    <div class="card my-5"><div class="card-header">Both your opponent and you decided to pass in all turns</div></div>
+    <div class="card"><div class="card-header">Both your opponent and you decided to pass in all turns</div>
+        <p></p>
 <!--    <p>Both the other player and you decided to pass in all rounds.</p>-->
-    <div class="card my-3">
-    <div class="card-body">
+<section class="card-2">
+    <div>
     {% if player.id_in_group == 1 %}
         <p>Since you are RED player, your payoff is: {{ large_pile_pass }}</p>
         <p>Your opponent's payoff is: {{ small_pile_pass }}</p>
@@ -21,26 +35,24 @@
         <p>Your opponent's payoff is: {{ large_pile_pass }}</p>
     {% endif %}
     </div>
-    </div>
-
+</section>
 <!-- Results if a player takes -->
 {% elif  group.round_outcome > 0  and group.round_outcome == player.id_in_group %}
-    <div class="card my-5"><div class="card-header">You decided to take the payoffs at node {{last_node}}</div></div>
-    <div class="card my-3">
-    <div class="card-body">
+    <div class="card">You decided to take the payoffs at node {{last_node}}</div>
+<p></p>
+    <div class="card-2">
 <!--        <p>You decided to take the large pile.</p>-->
         <p>Your payoff is: {{ large_pile }}</p>
         <p>Your opponent's payoff is: {{ small_pile }}</p>
     </div>
     </div>
 {% else %}
-    <div class="card my-5"><div class="card-header">Your opponent decided to take the payoffs at node {{last_node}}</div></div>
-    <div class="card my-3">
-    <div class="card-body">
+<div class="card">Your opponent decided to take the payoffs at node {{last_node}}</div>
+<p></p>
+    <div class="card-2">
 <!--        <p>Your opponent decided to take the large pile.</p>-->
         <p>Your payoff is: {{ small_pile }}</p>
         <p>Your opponent's payoff is: {{ large_pile }}</p>
-    </div>
     </div>
 {% endif %}
 

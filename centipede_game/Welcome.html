@@ -2,46 +2,63 @@
 {% load static %}
 {{ load otree static }}
 {% block title %}
+{% endblock %}
+
+{% block content %}
 <head>
     <style>
-        .container{
-        background-color: FloralWhite;
-        font: Georgia;
-        }
         .header{
         text-align: left;
         font-size: 2em;
+        border-bottom-style: dotted;
+        border-color:Thistle;
         }
         .subHead{
         display: block;
         margin-left: auto;
         margin-right: auto;
         width: 50%;
+        padding-left: 10px;
         }
         .subHead2{
         text-align: center;
         font-size:1.2em;
+        padding-left: 10px;
         }
         .container1{
         border:2px dotted Thistle;
         background-color: Lavender;
         margin-left: auto;
         margin-right: auto;
-        text-align: center;
         font-size:1.2em;
+        padding-left: 10px;
         }
         .container2{
         border:2px dotted Thistle;
         background-color: Lavender;
         margin-left: auto;
         margin-right: auto;
+        border-radius: 5px;
+        padding-left: 10px;
+        }
+        .container3{
+        border:2px dotted Thistle;
+        background-color: Azure;
+        margin-left: auto;
+        margin-right: auto;
         font-size:1.2em;
+        padding-left: 10px;
+        }
+        .container4{
+        border:2px dotted Thistle;
+        background-color: Azure;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 5px;
+        padding-left: 10px;
         }
     </style>
 </head>
-{% endblock %}
-
-{% block content %}
 <p xmlns="http://www.w3.org/1999/html">
 <img src="{{ static 'stonecoldcreamery.jpeg' }}" style="height:400px;width:400px;" class="subHead"/>
 <p class="subHead2">A game created by Stone Cold Creamery GmbH</p>
@@ -49,6 +66,7 @@
     <p class="header">How the game works:</p>
     You will be paired with another participant for the entirety of the game. Each round you will be randomly assigned either the red or blue player.<br>
     You will play {{ C.NUM_ROUNDS }} rounds of a game, either taking a given set of payoffs or passing the decision to the other player.<br>
+<br>
 <section>
     <p class="container1">Example of a round:</p>
 </section>
@@ -65,8 +83,8 @@
             <circle cx="15" cy="65" r="14" stroke="black" stroke-width="2" fill="red" />
             <line x1="30" y1="65" x2="90" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <line x1="15" y1="80" x2="15" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="25" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">&#128176;red</text>
-            <text x="25" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">&#128176;blue</text>
+            <text x="25" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">5</text>
+            <text x="25" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">3</text>
             <text x="15" y="35" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">1st</text>
         </g>
 <!-- 2nd node -->
@@ -74,8 +92,8 @@
             <circle cx="115" cy="65" r="15" stroke="black" stroke-width="2" fill="blue" />
             <line x1="130" y1="65" x2="180" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <line x1="115" y1="80" x2="115" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="115" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">2</text>
-            <text x="115" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">8</text>
+            <text x="115" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">6</text>
+            <text x="115" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">10</text>
             <text x="115" y="35" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">2nd</text>
         </g>
 <!-- 3rd node -->
@@ -83,34 +101,34 @@
             <circle cx="205" cy="65" r="14" stroke="black" stroke-width="2" fill="red" />
             <line x1="220" y1="65" x2="280" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <line x1="205" y1="80" x2="205" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="205" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">16</text>
-            <text x="205" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">4</text>
+            <text x="205" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">20</text>
+            <text x="205" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">12</text>
         </g>
 <!-- 4th node -->
         <g>
             <circle cx="305" cy="65" r="15" stroke="black" stroke-width="2" fill="blue" />
             <line x1="320" y1="65" x2="380" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <line x1="305" y1="80" x2="305" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="305" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">8</text>
-            <text x="305" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">32</text>
+            <text x="305" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">24</text>
+            <text x="305" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">40</text>
         </g>
 <!-- 5th node -->
         <g>
             <circle cx="405" cy="65" r="14" stroke="black" stroke-width="2" fill="red" />
             <line x1="420" y1="65" x2="480" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <line x1="405" y1="80" x2="405" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="405" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">64</text>
-            <text x="405" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">16</text>
+            <text x="405" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">80</text>
+            <text x="405" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">48</text>
         </g>
 <!-- 6th node -->
         <g>
             <circle cx="505" cy="65" r="15" stroke="black" stroke-width="2" fill="blue" />
             <line x1="520" y1="65" x2="580" y2="65" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
             <line x1="505" y1="80" x2="505" y2="140" stroke="#000" stroke-width="2" marker-end="url(#arrowhead)" />
-            <text x="505" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">32</text>
-            <text x="505" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">128</text>
-            <text x="620" y="65" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">final&#128176;</text>
-            <text x="620" y="85" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">final&#128176;</text>
+            <text x="505" y="170" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">96</text>
+            <text x="505" y="195" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">160</text>
+            <text x="620" y="65" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="red">320</text>
+            <text x="620" y="85" dominant-baseline="middle" text-anchor="middle" font-size="20" font-weight="bold" fill="blue">192</text>
         </g>
         <g>
             <rect x="35" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
@@ -130,21 +148,20 @@
 </div><br>
 <div class="container2">
     On the red player's turn, they must decide whether to <span style="color:DarkSlateGrey;">'take'</span> or <span style="color:DarkSlateGrey;">'pass'.</span><br>
-If the red player takes, the round ends and the payoffs <span style="color:red;">&#128176;red</span> are awarded for <span style="color:red;">red</span> and
-<span style="color:blue;">&#128176;blue</span> for <span style="color:blue;">blue.</span><br>
+If the red player takes at the first decision point, the round ends and the payoffs <span style="color:red;">&#128176;5</span> are awarded for <span style="color:red;">red</span> and
+<span style="color:blue;">&#128176;3</span> for <span style="color:blue;">blue.</span><br>
     If the red player passes, it moves to the blue player's decision whether to <span style="color:DarkSlateGrey;">'take'</span> or <span style="color:DarkSlateGrey;">'pass'.</span><br>
-    The round continues as so for the rest of the game.<br>
 </div><br>
 
-Important things to note:<br>
-- The payoff colors correspond with the player colors.<br>
-- If both players pass at every decision point, the final payoffs shown at the far right are awarded.<br>
-- The round ends and payoffs are awarded whenever a player takes or when players pass on all nodes.<br>
-- There are several variations of the game played in a nonconsecutive order.<br>
-- Before the start of each round, both players will see a preview of the round's payoffs.<br>
-- After completing all rounds, your total payoff across rounds will be shown. The top three scoring players will be rewarded by the experimenters.<br>
-<!-- is saying the top 3 will be rewarded going to incentivise people to act in a way contrary to their original preferences -->
-<p style="font-weight:10px;">If you have any questions or need help during the experiment, please ask an examiner. Please look only at your own device during this experiment.</p>
+<p class="container3">Important things to note:</p>
+<section class="container4">
+&#9997; If both players pass at every decision point, the final payoffs shown at the far right are awarded shown as (<span style="color:red;">320</span>,<span style="color:blue;">192</span>).<br>
+&#9997; The round ends and payoffs are awarded whenever a player takes or when players pass on all nodes.<br>
+&#9997; Before the start of each round, both players will see a preview of the round's payoffs.<br>
+&#9997; After completing all rounds, your total payoff across rounds will be shown. The top three scoring players will be rewarded by the experimenters.<br>
+</section>
+<br>
+<p>If you have any questions or need help during the experiment, please ask an examiner. Please look only at your own device during this experiment.</p>
     {% next_button %}
 
 {{ endblock }}

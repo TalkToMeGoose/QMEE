@@ -1,41 +1,51 @@
 {% extends "global/Page.html" %}
 {% load otree static %}
 {{ block title }}
-<!-- Opponent's decision -->
+{{ endblock }}
+
+{% block content %}
 <head>
     <style>
-    .top{
-    position: absolute;
-    z-index: 1;
-    }
-.middle{
-    position: absolute;
-    z-index: 0.5;
-    }
-.bottom{
-    z-index: 0;
-    }
-.card-header{
-    font-size: 0.6em;
-    background-color: DarkSeaGreen;
-    border: 2px solid WhiteSmoke;
-    }
-</style>
+        .top{
+        position: absolute;
+        z-index: 1;
+        }
+        .middle{
+        position: absolute;
+        z-index: 0.5;
+        }
+        .bottom{
+        z-index: 0;
+        }
+        .card-header{
+        background-color: DarkSeaGreen;
+        border: 2px solid WhiteSmoke;
+        padding-left: 10px;
+        }
+        .container1{
+        display: block;
+        background-color: Lavender;
+        border:2px dotted Thistle;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 5px;
+        padding-left: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+    </style>
 </head>
 {% if node > 1 %}
 <div class="card-header">Your opponent decided to pass</div>
 {% endif %}
 {% if player.id_in_group == 1 %}
-    <h3>Make Your Move, <font style="color:red;">RED</font> player</h3>
+    <h3 class="container1">Make Your Move, <span style="color:red;">RED</span> player</h3>
     {% else %}
-    <h3>Make Your Move, <font style="color:blue;">BLUE</font> player</h3>
+    <h3 class="container1">Make Your Move, <span style="color:blue;">BLUE</span> player</h3>
     {% endif %}
-Turn ({{ node }} / {{ C.NUM_NODES }}) of
+<section style="border-bottom-style: dotted;border-color:Thistle;">Turn ({{ node }} / {{ C.NUM_NODES }}) of
     Round ({{ group.round_number }} / {{ C.NUM_ROUNDS }})
-{{ endblock }}
-{% block content %}
-<!-- Centipede
-<input type="hidden" name="take" id="take_here"/>-->
+</section>
 <div>
 {# Scalable vector for payoffs #}
     {{ if group.treatment == 'control' }}
@@ -92,7 +102,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
 
     <svg class="top" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
         <g>
-            <rect x="35" y="50" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="35" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="45" y="70"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -100,7 +110,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
         </g>
 
         <g>
-            <rect x="1" y="100" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="1" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="10" y="120"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -111,14 +121,14 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
     {{ if group.node == 2}}
        <svg class="top" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
         <g>
-            <rect x="135" y="50" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="135" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="145" y="70"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
                 >Pass</text>
         </g>
         <g>
-            <rect x="95" y="100" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="95" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="100" y="120"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -129,7 +139,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
     {{ if group.node == 3 }}
     <svg class="top" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
         <g>
-            <rect x="223" y="50" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="223" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="231" y="70"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -137,7 +147,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
         </g>
 
         <g>
-            <rect x="185" y="100" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="185" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="191" y="120"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -148,7 +158,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
     {{ if group.node == 4 }}
     <svg class="top" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
         <g>
-            <rect x="325" y="50" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="325" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="333" y="70"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -156,7 +166,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
         </g>
 
         <g>
-            <rect x="280" y="100" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="280" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="287" y="120"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -167,7 +177,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
     {{ if group.node == 5 }}
     <svg class="top" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
         <g>
-            <rect x="425" y="50" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="425" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="433" y="70"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -175,7 +185,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
         </g>
 
         <g>
-            <rect x="380" y="100" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="380" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="387" y="120"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -186,7 +196,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
     {{ if group.node == 6 }}
     <svg class="top" id="svg" width="650" height="205" fill="white" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
         <g>
-            <rect x="525" y="50" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="525" y="50" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="533" y="70"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -194,7 +204,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
         </g>
 
         <g>
-            <rect x="480" y="100" width="50" height="30" stroke="black" stroke-width="2"></rect>
+            <rect x="480" y="100" width="50" height="30" stroke="black" stroke-width="2" fill="Thistle"></rect>
             <text x="488" y="120"
                 style="writing-mode: horizontal-tb; glyph-orientation-horizontal: 0;"
                 font-size="17" fill="black"
@@ -264,8 +274,9 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
     </svg>
 </div>
 <br>
-        <p style="font-weight: 1.6em;">Do you want to Take or Pass?</p>
-
+<section class="container1">
+    Do you want to Take or Pass?
+</section>
         <!--Buttons-->
         <div class="btn-div">
         <label id="take-label" class="btn btn-outline-primary">
@@ -274,6 +285,7 @@ Turn ({{ node }} / {{ C.NUM_NODES }}) of
         <label id="pass-label" class="btn btn-outline-primary">
             <input id="pass" type="submit" name="take" value="False" style="display: none;" required>Pass
         </label>
-        </div><br>
+        </div>
+<br>
 {{ include '_templates/global/BaseInstructions.html' }}
 {{ endblock }}

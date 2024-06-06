@@ -2,11 +2,35 @@
 {% load otree static %}
 
 {% block title %}
-    Round {{ group.round_number }} is about to begin!
+<span class="card-header">Round {{ group.round_number }} is about to begin!</span>
 {% endblock %}
 
 {% block content %}
-<h5>This round has the following payoffs:</h5>
+<head>
+    <style>
+        .top{
+        position: absolute;
+        z-index: 1;
+        }
+        .middle{
+        position: absolute;
+        z-index: 0.5;
+        }
+        .bottom{
+        z-index: 0;
+        }
+        .card-header{
+        display: block;
+        background-color: Lavender;
+        border:2px dotted Thistle;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 5px;
+        padding-left: 10px;
+        }
+    </style>
+</head>
+<h5 style="border-bottom-style: dotted;border-color:Thistle;">This round has the following payoffs:</h5>
 
 <div>
 {# Scalable vector for payoffs #}
@@ -119,22 +143,7 @@
         </g>
     </svg>
 </div>
-<style>
-    .top{
-    position: absolute;
-    z-index: 1;
-    }
-.middle{
-    position: absolute;
-    z-index: 0.5;
-    }
-.bottom{
-    z-index: 0;
-    }
-.card-header{
-    background-color: Lavender;
-}
-</style><br>
+<br>
 {% if group.treatment == 'higher_random' %}
 <b>NOTE:</b> The final payout is a random number between the ranges given, indicated by the color.
 {% endif %}

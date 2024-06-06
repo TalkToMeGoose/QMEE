@@ -1,15 +1,32 @@
 {% extends "global/Page.html" %}
 
-{% block title %}Survey{% endblock %}
+{% block title %}
+<section class="container1">Survey</section>
+{% endblock %}
 
 {% block content %}
-    <p>Please take a moment to consider how much each statement reflects your personality.</p>
+<head>
+    <style>
+        .container1{
+        display: block;
+        background-color: Lavender;
+        border:2px dotted Thistle;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 5px;
+        padding-left: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+    </style>
+</head>
+    <p style="border-bottom-style: dotted;border-color:Thistle;font-size:1.1em;">Please take a moment to consider how much each statement reflects your personality.</p>
     <form method="post">
         {% formfield player.altruism %}
         {% formfield player.trust %}
         {% formfield player.risk_tolerance %}
         {% formfield player.greed %}
         {% formfield player.desire_to_win %}
-        <button type="submit">Submit</button>
+        <button type="submit" style="background-color:Lavender;border-radius:5px;">Submit</button>
     </form>
 {% endblock %}

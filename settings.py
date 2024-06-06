@@ -7,31 +7,31 @@ SESSION_CONFIGS = [
          app_sequence=['centipede_game'],
          num_demo_participants=2,
      ),
-    dict(
+     dict(
         name='centipede_game_control',
         display_name='Centipede Game - Control',
         app_sequence=['centipede_game'],
         treatment='control',
         num_demo_participants=4,
-    ),
-    dict(
+     ),
+     dict(
         name='centipede_game_higher_fixed',
         display_name='Centipede Game - Higher Fixed',
         app_sequence=['centipede_game'],
         treatment='higher_fixed',
         num_demo_participants=4,
-    ),
-    dict(
+     ),
+     dict(
         name='centipede_game_higher_random',
         display_name='Centipede Game - Higher Random',
         app_sequence=['centipede_game'],
         treatment='higher_random',
         num_demo_participants=4,
-    ),
+     ),
 ]
 ROOMS = [
     dict(
-        name='QMEE_EXPERIMENT',
+        name='QMEE_EXPERIMENT_SS24',
         display_name='Stone Cold Creamery',
     )
 ]

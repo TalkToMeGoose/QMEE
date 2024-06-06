@@ -1,15 +1,43 @@
 {% extends "global/Page.html" %}
 
-{% block title %}You're done!{% endblock %}
-
-{% block content %}
-Thank you for participating in our experiment. After all players have finished, we will calculate the payouts
-<br> and give rewards to the top three scoring players
+{% block title %}
+    <span style="border-bottom-style: dotted;border-color:Thistle;">You're done!</span>
 {% endblock %}
 
-
 {% block content %}
-<h1>Final Results</h1>
+<head>
+    <style>
+        .container1{
+        display: block;
+        background-color: Lavender;
+        border:2px dotted Thistle;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 5px;
+        padding-left: 10px;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        }
+        .container2{
+        border:2px dotted Thistle;
+        margin-left: auto;
+        margin-right: auto;
+        border-radius: 5px;
+        padding-left: 10px;
+        }
+        th {
+        background-color: LightBlue;
+        }
+        tr:hover {
+        background-color: DarkSeaGreen;
+        }
+        th, td {
+        border-bottom: 1px solid #ddd;
+        padding: 15px;
+        }
+    </style>
+</head>
+<h1 class="container1">Final Results</h1>
 <table>
     <tr>
         <th>Participant ID</th>
@@ -22,12 +50,13 @@ Thank you for participating in our experiment. After all players have finished, 
     </tr>
     {% endfor %}
 </table><br>
-
-<p> Thank you for participating in our experiment! After all players have finished, <br>
+<section class="container2">
+    <p> Thank you for participating in our experiment! After all players have finished, <br>
     we will calculate the payouts and give rewards to the top three scoring players. <br>
     <br>
     You may now close this window. Alternatively, you can wait around to see the other <br>
     participants' scores as they finish.</p>
+</section>
 <script type="text/javascript">
     setTimeout(function(){
         location.reload();
