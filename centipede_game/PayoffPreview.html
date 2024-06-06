@@ -2,11 +2,11 @@
 {% load otree static %}
 
 {% block title %}
-    Round {{ group.round_number }}
+    Round {{ group.round_number }} is about to begin!
 {% endblock %}
 
 {% block content %}
-<h6>This round has the following payoffs:</h6>
+<h5>This round has the following payoffs:</h5>
 
 <div>
 {# Scalable vector for payoffs #}
@@ -147,6 +147,6 @@
         You will have to wait until the <font style="color:red;"><b>RED</b></font> player makes their choice.</div>
     {% endif %}
 
-<input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Start round"/>
+<input class="btn btn-primary btn-large btn-primary next-button otree-btn-next" type="submit" value="Continue"/>
 
 {% endblock %}

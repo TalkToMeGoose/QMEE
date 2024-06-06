@@ -180,27 +180,27 @@ class Player(BasePlayer):
     altruism = models.IntegerField(
         choices=C.LIKERT_SCALE,
         widget=widgets.RadioSelectHorizontal,
-        label="I believe in helping others even at a cost to myself."
+        label="I often help others without expecting anything in return."
     )
     trust = models.IntegerField(
         choices=C.LIKERT_SCALE,
         widget=widgets.RadioSelectHorizontal,
-        label="I generally trust others."
+        label="I am generally trusting of others."
     )
     risk_tolerance = models.IntegerField(
         choices=C.LIKERT_SCALE,
         widget=widgets.RadioSelectHorizontal,
-        label="I am willing to take risks."
+        label="I often enjoy the thrill of risk-taking."
     )
     greed = models.IntegerField(
         choices=C.LIKERT_SCALE,
         widget=widgets.RadioSelectHorizontal,
-        label="I often pursue my own advantage at the expense of others."
+        label="My own well-being is more important than that of others."
     )
     desire_to_win = models.IntegerField(
         choices=C.LIKERT_SCALE,
         widget=widgets.RadioSelectHorizontal,
-        label="I have a strong desire to win in competitive situations."
+        label="I consider myself to be a competitive person."
     )
 
 class NameEntry(Page):
@@ -293,19 +293,6 @@ class Results(Page):  # shows payoffs for this round
             cumulative_payoff=cumulative_payoff,
             treatment=group.treatment
         )
-
-
-# class ResultsCombined(Page):
-#     title_text = 'Combined Results'
-#
-#     @staticmethod
-#     def is_displayed(player: Player):
-#         return player.round_number == C.NUM_ROUNDS
-    # @staticmethod
-    # def vars_for_template(player : Player):
-    #     all_players = player.in_all_rounds()
-    #     combined_payoff =
-    # maybe show their payoffs and relate it to everyone else who has finished
 
 class Survey(Page):
     form_model = 'player'
