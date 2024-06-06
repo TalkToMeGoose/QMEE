@@ -4,6 +4,10 @@
 {% block title %}
 <head>
     <style>
+        .container{
+        background-color: FloralWhite;
+        font: Georgia;
+        }
         .header{
         text-align: left;
         font-size: 2em;
@@ -26,6 +30,13 @@
         text-align: center;
         font-size:1.2em;
         }
+        .container2{
+        border:2px dotted Thistle;
+        background-color: Lavender;
+        margin-left: auto;
+        margin-right: auto;
+        font-size:1.2em;
+        }
     </style>
 </head>
 {% endblock %}
@@ -36,10 +47,11 @@
 <p class="subHead2">A game created by Stone Cold Creamery Gmbh</p>
 
     <p class="header">How the game works:</p>
-    You will be randomly paired with another participant and randomly assigned the <span style="color:red;">red player</span> (first mover) or the <span style="color:blue;">blue player</span> (second mover).<br>
+    You will be paired with another participant for the entirety of the game. Each round you will be randomly assigned either the red or blue player.<br>
     You will play {{ C.NUM_ROUNDS }} rounds of a game, either taking a given set of payoffs or passing the decision to the other player.<br>
-
-<p class="container1">Example of a round:</p>
+<section>
+    <p class="container1">Example of a round:</p>
+</section>
 <div>
     <svg class="bottom" id="svg" width="650" height="205" style="border: 2px rgb(204, 204, 204); margin-top: 10px; margin-right: 10px;">
         <defs>
@@ -116,18 +128,19 @@
         </g>
             </svg>
 </div><br>
-<div class="container1">
-    The red player, at the 1st turn, must decide whether to <span style="color:DarkSlateGrey;">'take'</span> or <span style="color:DarkSlateGrey;">'pass'.</span><br>
+<div class="container2">
+    On the red player's turn, they must decide whether to <span style="color:DarkSlateGrey;">'take'</span> or <span style="color:DarkSlateGrey;">'pass'.</span><br>
 If the red player takes, the round ends and the payoffs <span style="color:red;">&#128176;red</span> are awarded for <span style="color:red;">red</span> and
 <span style="color:blue;">&#128176;blue</span> for <span style="color:blue;">blue.</span><br>
-    If the red player passes, it is the 2nd turn and blue's choice.<br>
+    If the red player passes, it moves to the blue player's decision whether to <span style="color:DarkSlateGrey;">'take'</span> or <span style="color:DarkSlateGrey;">'pass'.</span><br>
+    The round continues as so for the rest of the game.<br>
 </div><br>
 
 Important things to note:<br>
 - The payoff colors correspond with the player colors.<br>
-- If both players pass on every turn, the final payoffs at the far right are awarded.<br>
+- If both players pass at every decision point, the final payoffs shown at the far right are awarded.<br>
 - The round ends and payoffs are awarded whenever a player takes or when players pass on all nodes.<br>
-- There are several variations of the game you will be playing in nonconsecutive orders.<br>
+- There are several variations of the game played in a nonconsecutive order.<br>
 - Before the start of each round, both players will see a preview of the round's payoffs.<br>
 - After completing all rounds, your total payoff across rounds will be shown. The top three scoring players will be rewarded by the experimenters.<br>
 <!-- is saying the top 3 will be rewarded going to incentivise people to act in a way contrary to their original preferences -->
