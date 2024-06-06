@@ -1,0 +1,15 @@
+{% extends "global/Page.html" %}
+
+{% block title %}Survey{% endblock %}
+
+{% block content %}
+    <p>Please take a moment to consider how much each statement reflects your personality.</p>
+    <form method="post">
+        {% formfield player.altruism %}
+        {% formfield player.trust %}
+        {% formfield player.risk_tolerance %}
+        {% formfield player.greed %}
+        {% formfield player.desire_to_win %}
+        <button type="submit">Submit</button>
+    </form>
+{% endblock %}
