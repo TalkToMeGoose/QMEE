@@ -1,0 +1,59 @@
+---
+title: "Centipede Game Experiment Analysis"
+author: "Adam Hardaker & Rachel Hayward"
+date: "2024-06-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(lme4)
+source("R/data_processing.R")
+source("R/analysis_functions.R")
+source("R/visualizations.R")
+```
+
+## Introduction
+
+Brief description of the experiment and research questions.
+
+## Data Processing
+
+```{r cars}
+# Code to load and process data
+data <- load_and_process_data("path/to/your/data.csv")
+```
+
+## Descriptive Statistics
+
+```{r pressure, echo=FALSE}
+# Code for descriptive statistics
+summarize_data(data)
+```
+
+## Treatment Effects Analysis
+```{r}
+# Code for analyzing treatment effects
+analyze_treatment_effects(data)
+```
+
+## Learning Effects Analysis
+```{r}
+# Code for analyzing learning effects
+analyze_learning_effects(data)
+```
+
+## Survey Response Analysis
+```{r}
+# Code for analyzing survey responses
+analyze_survey_responses(data)
+```
+
+## Conclusion
+
+Summary of findings and implications
+
+## References
+
+[insert references]
