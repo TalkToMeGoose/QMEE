@@ -1,0 +1,132 @@
+---
+title: "Demo"
+author: "Adam Hardaker"
+date: "2024-06-29"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(readr)
+library(lme4)
+library(emmeans)
+library(car)
+library(gridExtra)
+library(ggplot2)
+```
+
+loading the data
+```{r}
+file_path <- "data/ACTUAL_EXP_CREAMERY_QMEESS24.csv"
+
+# Read the CSV file
+df <- read_csv(file_path)
+```
+
+Cleaning data
+```{r}
+# Extract survey responses
+survey_responses <- df %>%
+  select(
+    participant_id = `participant.id_in_session`,
+    participant_label = `participant.label`,
+    altruism = `centipede_game.4.player.altruism`,
+    trust = `centipede_game.4.player.trust`,
+    risk_tolerance = `centipede_game.4.player.risk_tolerance`,
+    greed = `centipede_game.4.player.greed`,
+    desire_to_win = `centipede_game.4.player.desire_to_win`
+  ) %>%
+  mutate(across(altruism:desire_to_win, ~as.numeric(as.character(.))))  # Convert to numeric
+
+# Restructure the game data
+restructured_data <- df %>%
+  pivot_longer(
+    cols = starts_with("centipede_game."),
+    names_to = c("round", ".value"),
+    names_pattern = "centipede_game\\.(\\d+)\\.(.+)",
+    values_drop_na = TRUE
+  ) %>%
+  select(
+    participant_id = `participant.id_in_session`,
+    participant_label = `participant.label`,
+    round,
+    group_id = `group.id_in_subsession`,
+    role = `player.id_in_group`, # indicates first-mover (1) or second mover (2)
+    treatment = `group.treatment`,
+    node_reached = `group.node`,
+    payoff = `player.payoff`,
+    treatment_order = `group.treatment_order`,
+    large_pile_end = `group.large_pile_end`,
+    small_pile_end = `group.small_pile_end`
+  ) %>%
+  mutate(
+    round = as.integer(round),
+    group_id = as.integer(group_id),
+    role = as.integer(role),
+    node_reached = as.integer(node_reached),
+    payoff = as.numeric(payoff),
+    large_pile_end = as.numeric(large_pile_end),
+    small_pile_end = as.numeric(small_pile_end)
+  )
+
+# Join game data with survey responses
+final_data <- restructured_data %>%
+  left_join(survey_responses, by = c("participant_id", "participant_label"))
+
+# Sort the data by group_id, then round, then role
+sorted_data <- final_data %>%
+  arrange(group_id, round, role)
+
+rm(restructured_data,final_data,df)
+
+data<-sorted_data
+# you can also save this if you wanna
+```
+
+## Analysis
+
+test normality
+```{r}
+shapiro_test <- shapiro.test(data$node_reached)
+shapiro_test
+```
+Data significantly deviates from normal distribution
+
+Some more normality stuff
+```{r}
+# Q-Q plot
+qq_plot <- ggplot(data, aes(sample = node_reached)) +
+  stat_qq() +
+  stat_qq_line() +
+  theme_minimal() +
+  labs(title = "Q-Q Plot of Node Reached")
+
+plot(qq_plot)
+
+# Histogram
+hist_plot <- ggplot(data, aes(x = node_reached)) +
+  geom_histogram(binwidth = 1, fill = "blue", alpha = 0.7) +
+  theme_minimal() +
+  labs(title = "Histogram of Node Reached", x = "Node Reached", y = "Frequency")
+
+plot(hist_plot)
+```
+Doesn't look normal
+
+Check residual normality
+```{r}
+# gotta figure out what to do with this
+qq_residual_plot <- ggplot(data.frame(residuals), aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line() +
+  theme_minimal() +
+  labs(title = "Q-Q Plot of Model Residuals")
+```
+
+Since it's not normal use Friedman's test instead of repeated measure ANOVA
+```{r}
+friedman_result <- friedman.test(node_reached ~ treatment | participant_id, data = data)
+friedman_result
+```
+
