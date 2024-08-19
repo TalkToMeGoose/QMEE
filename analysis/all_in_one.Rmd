@@ -9,8 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
-library(lme4)
-library(lmertest)
 library(emmeans)
 library(psych)
 library(car)
@@ -20,6 +18,7 @@ library(ggplot2)
 
 loading the data
 ```{r}
+setwd("C:/Users/mahar/OneDrive/Academia/Kassel EBGo/2. Summer 24/QMEE/otree_dev/QMEE/analysis")
 file_path <- "data/ACTUAL_EXP_CREAMERY_QMEESS24.csv"
 
 # Read the CSV file
@@ -96,6 +95,34 @@ Descriptive stats:
 - frequency of games ended due to player 1 vs player 2 decisions
 - average difference in payoffs between player 1 and player 2
 
+Checking for balance: bar chart and chi-squared
+```{r}
+# Count the number of games played in each treatment
+treatment_counts <- data %>%
+  group_by(treatment) %>%
+  summarise(
+    num_games = n_distinct(group_id, round),
+    num_participants = n_distinct(participant_id)
+  )
+
+# Print the results
+print(treatment_counts)
+
+# Visualize the balance
+ggplot(treatment_counts, aes(x = treatment, y = num_games, fill = treatment)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = num_games), vjust = -0.5) +
+  labs(title = "Number of Games Played per Treatment",
+       x = "Treatment",
+       y = "Number of Games") +
+  theme_minimal()
+
+# Chi-square test for equal proportions
+chisq_result <- chisq.test(treatment_counts$num_games)
+print(chisq_result)
+```
+
+
 ```{r}
 # Overall game statistics
 overall_stats <- data %>%
@@ -148,14 +175,20 @@ ggplot(data, aes(x = treatment, y = node_reached)) +
          y="Node Reached",
          fill="Treatment") +
   theme_minimal()
+```
 
+Average Nodes Reached by Round and Treatment
+```{r}
 ggplot(data, aes(x = round, y = node_reached, color = treatment)) +
   geom_line(stat = "summary", fun = "mean", linewidth = 2) +
   labs(title = "Average Nodes Reached by Round and Treatment",
        y="Node Reached",
        x="Round",
        color="Treatment") +
-  theme_minimal()
+  theme_minimal() +
+  theme(legend.position = c(0.8, 0.8),  # Adjust these values as needed
+        legend.background = element_rect(fill = "white", color = "grey"))
+
 ```
 
 test normality
@@ -165,44 +198,48 @@ shapiro_test
 ```
 Data significantly deviates from normal distribution
 
-Some more normality stuff
+Histogram by treatment
 ```{r}
-# Q-Q plot
-qq_plot <- ggplot(data, aes(sample = node_reached)) +
-  stat_qq() +
-  stat_qq_line() +
+ggplot(data, aes(x = factor(node_reached), fill = treatment)) +
+  geom_bar(position = "dodge", stat = "count") +
+  scale_fill_manual(values = c("control" = "#F8766D", "higher_fixed" = "#00BA38", "higher_random" = "#619CFF")) +
+  labs(x = "Node Reached", 
+       y = "Frequency", 
+       fill = "RoundType") +
   theme_minimal() +
-  labs(title = "Q-Q Plot of Node Reached")
-
-plot(qq_plot)
-
-# Histogram
-hist_plot <- ggplot(data, aes(x = node_reached)) +
-  geom_histogram(binwidth = .5, fill = "orange", color="black", alpha = 1) +
-  geom_text(stat = 'count', aes(label = ..count..), vjust = -0.5) +
-  scale_x_continuous(breaks = seq(1, 6, by = 1)) +
-  theme_minimal() +
-  labs(title = "Histogram of Node Reached", x = "Node Reached", y = "Frequency")
-
-plot(hist_plot)
-
-library(ggplot2)
-# Plot
-g <- ggplot(data, aes(node_reached))
-g + geom_density(aes(fill=factor(treatment)), alpha=0.4) + 
-    labs(title="Node Reached Grouped by Treatment", 
-         x="Node Reached",
-         fill="Treatment")
-
-# Plot
-g2 <- ggplot(data, aes(treatment, node_reached))
-g2 + geom_boxplot(varwidth=T, fill="plum") + 
-    labs(title="Node Reached Grouped by Treatment",
-         x="Treatment",
-         y="Node Reached",
-         fill="Treatment")
+  theme(#panel.grid.major = element_line(color = "gray90"),
+        #panel.grid.minor = element_blank(),
+        #panel.background = element_rect(fill = "white"),
+        #axis.line = element_line(color = "black"),
+        legend.position = c(0.85, 0.85),  # Position legend inside the plot
+        legend.background = element_rect(fill = "white", color = "gray", size = 0.5),
+        legend.margin = margin(6, 6, 6, 6),
+        legend.key.size = unit(1, "lines")) +  # Make legend keys smaller
+  scale_x_discrete(limits = factor(1:6)) +  # Ensure all nodes from 1 to 6 are shown
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 45))  # Adjust y-axis to start at 0 and extend to 45
 ```
 Doesn't look normal
+
+```{r}
+
+# Poisson regression for count data (if `node_reached` is count-like)
+glm_model <- glm(node_reached ~ treatment + round, family = "poisson", data = data)
+
+
+# Extract residuals
+residuals <- residuals(glm_model)
+
+
+# Q-Q Plot for Residuals
+ggplot(data.frame(residuals = residuals), aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(title = "Q-Q Plot of Residuals",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles") +
+  theme_minimal()
+```
+
 
 ## statistical tests
 
@@ -227,11 +264,6 @@ data_long <- data %>%
   arrange(participant_id, round) %>%
   group_by(participant_id) %>%
   mutate(order = row_number())
-
-# Fit linear mixed model to test for learning effects
-lmm_learning <- lmer(node_reached ~ order + treatment + (1|participant_id), data = data_long)
-print("\nLinear Mixed Model for Learning Effects:")
-print(summary(lmm_learning))
 
 # Visualize learning effects
 ggplot(data_long, aes(x = order, y = node_reached, color = treatment)) +
