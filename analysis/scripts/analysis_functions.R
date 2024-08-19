@@ -29,7 +29,7 @@ check_residual_normality <- function(model) {
   residuals <- resid(model)
   shapiro_test <- shapiro.test(residuals)
   
-  qq__residual_plot <- ggplot(data.frame(residuals), aes(sample = residuals)) +
+  qq_residual_plot <- ggplot(data.frame(residuals), aes(sample = residuals)) +
     stat_qq() +
     stat_qq_line() +
     theme_minimal() +

@@ -9,8 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(readr)
-library(lme4)
 library(emmeans)
+library(psych)
 library(car)
 library(gridExtra)
 library(ggplot2)
@@ -18,13 +18,14 @@ library(ggplot2)
 
 loading the data
 ```{r}
+setwd("C:/Users/mahar/OneDrive/Academia/Kassel EBGo/2. Summer 24/QMEE/otree_dev/QMEE/analysis")
 file_path <- "data/ACTUAL_EXP_CREAMERY_QMEESS24.csv"
 
 # Read the CSV file
 df <- read_csv(file_path)
 ```
 
-Cleaning data
+Cleaning data and using long format
 ```{r}
 # Extract survey responses
 survey_responses <- df %>%
@@ -57,8 +58,7 @@ restructured_data <- df %>%
     node_reached = `group.node`,
     payoff = `player.payoff`,
     treatment_order = `group.treatment_order`,
-    large_pile_end = `group.large_pile_end`,
-    small_pile_end = `group.small_pile_end`
+    
   ) %>%
   mutate(
     round = as.integer(round),
@@ -66,8 +66,6 @@ restructured_data <- df %>%
     role = as.integer(role),
     node_reached = as.integer(node_reached),
     payoff = as.numeric(payoff),
-    large_pile_end = as.numeric(large_pile_end),
-    small_pile_end = as.numeric(small_pile_end)
   )
 
 # Join game data with survey responses
@@ -86,47 +84,264 @@ data<-sorted_data
 
 ## Analysis
 
-test normality
+Descriptive stats:
+1. Sample size and demographics
+2. Number of groups
+3. Treatment-Specific Statistics
+4. Round specific statistics
+5. Treatment Order Effects
+6. Personality Traits
+7. Group dynamics
+- frequency of games ended due to player 1 vs player 2 decisions
+- average difference in payoffs between player 1 and player 2
+
+Checking for balance: bar chart and chi-squared
 ```{r}
-shapiro_test <- shapiro.test(data$node_reached)
-shapiro_test
+# Count the number of games played in each treatment
+treatment_counts <- data %>%
+  group_by(treatment) %>%
+  summarise(
+    num_games = n_distinct(group_id, round),
+    num_participants = n_distinct(participant_id)
+  )
+
+# Print the results
+print(treatment_counts)
+
+# Visualize the balance
+ggplot(treatment_counts, aes(x = treatment, y = num_games, fill = treatment)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = num_games), vjust = -0.5) +
+  labs(title = "Number of Games Played per Treatment",
+       x = "Treatment",
+       y = "Number of Games") +
+  theme_minimal()
+
+# Chi-square test for equal proportions
+chisq_result <- chisq.test(treatment_counts$num_games)
+print(chisq_result)
+```
+
+
+```{r}
+# Overall game statistics
+overall_stats <- data %>%
+  summarise(
+    mean_node = mean(node_reached),
+    median_node = median(node_reached),
+    sd_node = sd(node_reached),
+    mean_payoff = mean(payoff)
+  )
+
+# Treatment-specific statistics
+treatment_stats <- data %>%
+  group_by(treatment) %>%
+  summarise(
+    mean_node = mean(node_reached),
+    median_node = median(node_reached),
+    sd_node = sd(node_reached),
+    mean_payoff = mean(payoff)
+  )
+
+# Round-specific statistics
+round_stats <- data %>%
+  group_by(round) %>%
+  summarise(
+    mean_node = mean(node_reached)
+  )
+
+# Personality traits summary
+personality_stats <- data %>%
+  select(altruism, trust, risk_tolerance, greed, desire_to_win) %>%
+  describe()
+
+# Correlation of traits with game outcomes
+trait_correlations <- data %>%
+  select(node_reached, payoff, altruism, trust, risk_tolerance, greed, desire_to_win) %>%
+  cor()
+
+# Print results
+print(overall_stats)
+print(treatment_stats)
+print(round_stats)
+print(personality_stats)
+print(trait_correlations)
+```
+
+BOXPLOT: Node Reached by Treatment
+```{r}
+ggplot(data, aes(x = treatment, y = node_reached)) +
+  geom_boxplot(varwidth=T, fill="plum", color="black") + 
+    labs(title="Node Reached Grouped by Treatment",
+         x="Treatment",
+         y="Node Reached",
+         fill="Treatment") +
+  theme_minimal()
+```
+
+LINE GRAPH: Average Nodes Reached by Round and Treatment
+```{r}
+ggplot(data, aes(x = round, y = node_reached, color = treatment)) +
+  geom_line(stat = "summary", fun = "mean", linewidth = 2) +
+  labs(title = "Average Nodes Reached by Round and Treatment",
+       y="Node Reached",
+       x="Round",
+       color="Treatment") +
+  theme_minimal() +
+  theme(legend.position = c(0.8, 0.8),  # Adjust these values as needed
+        legend.background = element_rect(fill = "white", color = "grey"))
+
+```
+
+Histogram: Node Reached by Treatment
+Histogram by treatment
+```{r}
+ggplot(data, aes(x = factor(node_reached), fill = treatment)) +
+  geom_bar(position = "dodge", stat = "count") +
+  scale_fill_manual(values = c("control" = "#F8766D", "higher_fixed" = "#00BA38", "higher_random" = "#619CFF")) +
+  labs(x = "Node Reached", 
+       y = "Frequency", 
+       fill = "RoundType") +
+  theme_minimal() +
+  theme(legend.position = c(0.85, 0.85),  # Position legend inside the plot
+        legend.background = element_rect(fill = "white", color = "gray", size = 0.5),
+        legend.margin = margin(6, 6, 6, 6),
+        legend.key.size = unit(1, "lines")) +  # Make legend keys smaller
+  scale_x_discrete(limits = factor(1:6)) +  # Ensure all nodes from 1 to 6 are shown
+  scale_y_continuous(expand = c(0, 0), limits = c(0, 45))  # Adjust y-axis to start at 0 and extend to 45
+```
+
+SHAPIRO & Q-Q Plot for normality testing
+```{r}
+# Shapiro-Wilk Test
+shapiro.test(data$node_reached)
+
+# Q-Q Plot
+# Poisson regression for count data (if `node_reached` is count-like)
+glm_model <- glm(node_reached ~ treatment + round, family = "poisson", data = data)
+
+# Extract residuals
+residuals <- residuals(glm_model)
+
+# Q-Q Plot for Residuals
+ggplot(data.frame(residuals = residuals), aes(sample = residuals)) +
+  stat_qq() +
+  stat_qq_line() +
+  labs(title = "Q-Q Plot of Residuals",
+       x = "Theoretical Quantiles",
+       y = "Sample Quantiles") +
+  theme_minimal()
+
 ```
 Data significantly deviates from normal distribution
 
-Some more normality stuff
+
+## statistical tests
+
+Use wide data for Friedman test
 ```{r}
-# Q-Q plot
-qq_plot <- ggplot(data, aes(sample = node_reached)) +
-  stat_qq() +
-  stat_qq_line() +
-  theme_minimal() +
-  labs(title = "Q-Q Plot of Node Reached")
+data_wide <- data %>%
+  group_by(participant_id, treatment) %>%
+  summarize(avg_node_reached = mean(node_reached, na.rm = TRUE), .groups = "drop") %>%
+  pivot_wider(names_from = treatment, values_from = avg_node_reached) %>%
+  drop_na()
 
-plot(qq_plot)
+print(head(data_wide))
 
-# Histogram
-hist_plot <- ggplot(data, aes(x = node_reached)) +
-  geom_histogram(binwidth = 1, fill = "blue", alpha = 0.7) +
-  theme_minimal() +
-  labs(title = "Histogram of Node Reached", x = "Node Reached", y = "Frequency")
-
-plot(hist_plot)
-```
-Doesn't look normal
-
-Check residual normality
-```{r}
-# gotta figure out what to do with this
-qq_residual_plot <- ggplot(data.frame(residuals), aes(sample = residuals)) +
-  stat_qq() +
-  stat_qq_line() +
-  theme_minimal() +
-  labs(title = "Q-Q Plot of Model Residuals")
+friedman_result <- friedman.test(as.matrix(data_wide[, c("control", "higher_fixed", "higher_random")]))
+print(friedman_result)
 ```
 
-Since it's not normal use Friedman's test instead of repeated measure ANOVA
+Learning effects test
 ```{r}
-friedman_result <- friedman.test(node_reached ~ treatment | participant_id, data = data)
-friedman_result
+# Assuming your data is in a dataframe called 'data'
+# Ensure 'round' is numeric and 'group_id' is a factor
+data_learn <- data %>%
+  mutate(
+    round = as.numeric(round),
+    group_id = as.factor(group_id)
+  )
+
+# Fit GLM with Poisson distribution
+model_group_learning <- glm(node_reached ~ round * group_id, 
+                            data = data_learn, family = poisson)
+
+# Check for overdispersion
+dispersion_test <- sum(residuals(model_group_learning, type = "pearson")^2) / df.residual(model_group_learning)
+print(paste("Dispersion parameter:", dispersion_test))
+
+# Print model summary
+summary(model_group_learning)
+
+# ANOVA to test significance of effects
+Anova(model_group_learning, type = "III")
+
+# Optional: Create prediction data and add to plot
+new_data <- expand_grid(
+  round = unique(data_learn$round),
+  group_id = unique(data_learn$group_id)
+)
+new_data$predicted <- predict(model_group_learning, newdata = new_data, type = "response")
+
+ggplot(data_learn, aes(x = round, y = node_reached, color = group_id)) +
+  geom_point(alpha = 0.3) +
+  geom_line(data = new_data, aes(y = predicted)) +
+  labs(title = "Learning Effects Across Rounds by Group (with Predictions)",
+       x = "Round", y = "Node Reached",
+       color = "Group ID") +
+  theme_minimal() +
+  theme(legend.position = "none")  # Remove legend if there are too many groups
+
+# Visualize learning effects by group
+ggplot(data, aes(x = round, y = node_reached, color = group_id)) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line") +
+  labs(title = "Learning Effects Across Rounds by Group",
+       x = "Round", y = "Average Node Reached",
+       color = "Group ID") +
+  theme_minimal() +
+  theme(legend.position = "none")  # Remove legend if there are too many groups
+```
+
+Order effects
+```{r}
+data_order <- data %>%
+  arrange(participant_id, round) %>%
+  group_by(participant_id) %>%
+  mutate(
+    order = row_number(),
+    treatment = as.factor(treatment),
+    treatment_order = as.factor(treatment_order)  # Assuming you have this variable
+  ) %>%
+  ungroup()
+
+# Fit GLM with Poisson distribution
+model_order <- glm(node_reached ~ order * treatment + treatment_order, 
+                   data = data_order, family = poisson)
+
+# Check for overdispersion
+dispersion_test <- sum(residuals(model_order, type = "pearson")^2) / df.residual(model_order)
+print(paste("Dispersion parameter:", dispersion_test))
+
+# If overdispersed (dispersion > 1.5), use quasipoisson
+if (dispersion_test > 1.5) {
+  model_order <- glm(node_reached ~ order * treatment + treatment_order, 
+                     data = data_order, family = quasipoisson)
+}
+
+# Print model summary
+summary(model_order)
+
+# ANOVA to test significance of effects
+Anova(model_order, type = "III")
+
+# Visualize order effects
+ggplot(data_order, aes(x = order, y = node_reached, color = treatment)) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line") +
+  facet_wrap(~ treatment_order) +
+  labs(title = "Order Effects by Treatment and Treatment Order",
+       x = "Order of Game", y = "Average Node Reached") +
+  theme_minimal()
 ```
 
