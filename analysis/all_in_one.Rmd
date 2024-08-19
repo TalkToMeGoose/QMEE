@@ -166,8 +166,10 @@ print(treatment_stats)
 print(round_stats)
 print(personality_stats)
 print(trait_correlations)
+```
 
-# You might also want to create visualizations, e.g.:
+BOXPLOT: Node Reached by Treatment
+```{r}
 ggplot(data, aes(x = treatment, y = node_reached)) +
   geom_boxplot(varwidth=T, fill="plum", color="black") + 
     labs(title="Node Reached Grouped by Treatment",
@@ -177,7 +179,7 @@ ggplot(data, aes(x = treatment, y = node_reached)) +
   theme_minimal()
 ```
 
-Average Nodes Reached by Round and Treatment
+LINE GRAPH: Average Nodes Reached by Round and Treatment
 ```{r}
 ggplot(data, aes(x = round, y = node_reached, color = treatment)) +
   geom_line(stat = "summary", fun = "mean", linewidth = 2) +
@@ -191,13 +193,7 @@ ggplot(data, aes(x = round, y = node_reached, color = treatment)) +
 
 ```
 
-test normality
-```{r}
-shapiro_test <- shapiro.test(data$node_reached)
-shapiro_test
-```
-Data significantly deviates from normal distribution
-
+Histogram: Node Reached by Treatment
 Histogram by treatment
 ```{r}
 ggplot(data, aes(x = factor(node_reached), fill = treatment)) +
@@ -207,28 +203,25 @@ ggplot(data, aes(x = factor(node_reached), fill = treatment)) +
        y = "Frequency", 
        fill = "RoundType") +
   theme_minimal() +
-  theme(#panel.grid.major = element_line(color = "gray90"),
-        #panel.grid.minor = element_blank(),
-        #panel.background = element_rect(fill = "white"),
-        #axis.line = element_line(color = "black"),
-        legend.position = c(0.85, 0.85),  # Position legend inside the plot
+  theme(legend.position = c(0.85, 0.85),  # Position legend inside the plot
         legend.background = element_rect(fill = "white", color = "gray", size = 0.5),
         legend.margin = margin(6, 6, 6, 6),
         legend.key.size = unit(1, "lines")) +  # Make legend keys smaller
   scale_x_discrete(limits = factor(1:6)) +  # Ensure all nodes from 1 to 6 are shown
   scale_y_continuous(expand = c(0, 0), limits = c(0, 45))  # Adjust y-axis to start at 0 and extend to 45
 ```
-Doesn't look normal
 
+SHAPIRO & Q-Q Plot for normality testing
 ```{r}
+# Shapiro-Wilk Test
+shapiro.test(data$node_reached)
 
+# Q-Q Plot
 # Poisson regression for count data (if `node_reached` is count-like)
 glm_model <- glm(node_reached ~ treatment + round, family = "poisson", data = data)
 
-
 # Extract residuals
 residuals <- residuals(glm_model)
-
 
 # Q-Q Plot for Residuals
 ggplot(data.frame(residuals = residuals), aes(sample = residuals)) +
@@ -238,7 +231,9 @@ ggplot(data.frame(residuals = residuals), aes(sample = residuals)) +
        x = "Theoretical Quantiles",
        y = "Sample Quantiles") +
   theme_minimal()
+
 ```
+Data significantly deviates from normal distribution
 
 
 ## statistical tests
@@ -257,21 +252,96 @@ friedman_result <- friedman.test(as.matrix(data_wide[, c("control", "higher_fixe
 print(friedman_result)
 ```
 
-Check learning effects
+Learning effects test
 ```{r}
-# Prepare data for learning effects analysis
-data_long <- data %>%
+# Assuming your data is in a dataframe called 'data'
+# Ensure 'round' is numeric and 'group_id' is a factor
+data_learn <- data %>%
+  mutate(
+    round = as.numeric(round),
+    group_id = as.factor(group_id)
+  )
+
+# Fit GLM with Poisson distribution
+model_group_learning <- glm(node_reached ~ round * group_id, 
+                            data = data_learn, family = poisson)
+
+# Check for overdispersion
+dispersion_test <- sum(residuals(model_group_learning, type = "pearson")^2) / df.residual(model_group_learning)
+print(paste("Dispersion parameter:", dispersion_test))
+
+# Print model summary
+summary(model_group_learning)
+
+# ANOVA to test significance of effects
+Anova(model_group_learning, type = "III")
+
+# Optional: Create prediction data and add to plot
+new_data <- expand_grid(
+  round = unique(data_learn$round),
+  group_id = unique(data_learn$group_id)
+)
+new_data$predicted <- predict(model_group_learning, newdata = new_data, type = "response")
+
+ggplot(data_learn, aes(x = round, y = node_reached, color = group_id)) +
+  geom_point(alpha = 0.3) +
+  geom_line(data = new_data, aes(y = predicted)) +
+  labs(title = "Learning Effects Across Rounds by Group (with Predictions)",
+       x = "Round", y = "Node Reached",
+       color = "Group ID") +
+  theme_minimal() +
+  theme(legend.position = "none")  # Remove legend if there are too many groups
+
+# Visualize learning effects by group
+ggplot(data, aes(x = round, y = node_reached, color = group_id)) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line") +
+  labs(title = "Learning Effects Across Rounds by Group",
+       x = "Round", y = "Average Node Reached",
+       color = "Group ID") +
+  theme_minimal() +
+  theme(legend.position = "none")  # Remove legend if there are too many groups
+```
+
+Order effects
+```{r}
+data_order <- data %>%
   arrange(participant_id, round) %>%
   group_by(participant_id) %>%
-  mutate(order = row_number())
+  mutate(
+    order = row_number(),
+    treatment = as.factor(treatment),
+    treatment_order = as.factor(treatment_order)  # Assuming you have this variable
+  ) %>%
+  ungroup()
 
-# Visualize learning effects
-ggplot(data_long, aes(x = order, y = node_reached, color = treatment)) +
-  geom_smooth(method = "lm", se = FALSE) +
-  geom_point(alpha = 0.5) +
-  labs(title = "Learning Effects Across Rounds",
-       x = "Order of Rounds",
-       y = "Node Reached") +
+# Fit GLM with Poisson distribution
+model_order <- glm(node_reached ~ order * treatment + treatment_order, 
+                   data = data_order, family = poisson)
+
+# Check for overdispersion
+dispersion_test <- sum(residuals(model_order, type = "pearson")^2) / df.residual(model_order)
+print(paste("Dispersion parameter:", dispersion_test))
+
+# If overdispersed (dispersion > 1.5), use quasipoisson
+if (dispersion_test > 1.5) {
+  model_order <- glm(node_reached ~ order * treatment + treatment_order, 
+                     data = data_order, family = quasipoisson)
+}
+
+# Print model summary
+summary(model_order)
+
+# ANOVA to test significance of effects
+Anova(model_order, type = "III")
+
+# Visualize order effects
+ggplot(data_order, aes(x = order, y = node_reached, color = treatment)) +
+  stat_summary(fun = mean, geom = "point") +
+  stat_summary(fun = mean, geom = "line") +
+  facet_wrap(~ treatment_order) +
+  labs(title = "Order Effects by Treatment and Treatment Order",
+       x = "Order of Game", y = "Average Node Reached") +
   theme_minimal()
 ```
 
